@@ -1,9 +1,6 @@
 <style lang='sass'>
-	@import "./../style/theme"
-	@import "./../style/fonts"
-
 	h1
-			font-family: "Obacht! Display", sans-serif
+		font-family: "Obacht! Display", sans-serif
 </style>
 
 <svelte:head>
