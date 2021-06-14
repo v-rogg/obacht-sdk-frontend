@@ -1,3 +1,11 @@
+<style lang='sass'>
+	@import "./../style/theme"
+	@import "./../style/fonts"
+
+	h1
+			font-family: "Obacht! Display", sans-serif
+</style>
+
 <svelte:head>
 	<title>Obacht! SDK Configurator</title>
 </svelte:head>
