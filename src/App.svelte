@@ -1,14 +1,15 @@
 <script lang="ts">
     import Child from './lib/Child.svelte';
-    import { readSocketStore, socketStore } from './store';
+    import Three from './lib/Three/index.svelte';
+    // import { readSocketStore, socketStore } from './store';
 
-    let foo;
-    socketStore.subscribe(value => foo = value);
-    foo.onmessage = (e) => console.log(e.data);
+    // let foo;
+    // socketStore.subscribe(value => foo = value);
+    // foo.onmessage = (e) => console.log(e.data);
 
 
-    let message: string = " ";
-    readSocketStore.subscribe(value => message = value)
+    // let message: string = " ";
+    // readSocketStore.subscribe(value => message = value)
 </script>
 
 <svelte:head>
@@ -16,15 +17,16 @@
 </svelte:head>
 
 <main>
-    {#if message}
-        <p>{message}</p>
-    {:else}
-        <p>
-            <br/>
-        </p>
-    {/if}
+    <!--{#if message}-->
+    <!--    <p>{message}</p>-->
+    <!--{:else}-->
+    <!--    <p>-->
+    <!--        <br/>-->
+    <!--    </p>-->
+    <!--{/if}-->
 
 	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
 
+    <Three/>
     <Child/>
 </main>

@@ -1,52 +1,46 @@
 <script lang='ts'>
     import * as THREE from 'three';
     import CameraControls from 'camera-controls';
-    import { onDestroy, onMount } from 'svelte';
+    import { onMount } from 'svelte';
     import Stats from 'stats.js';
+    import { readSocketStore } from '../../store';
     CameraControls.install( {THREE: THREE } );
 
+    import { wasmStore } from '../../store';
+    import type { wasmInterface } from '../../types';
 
-    // export let scans;
+    let wasm: wasmInterface;
 
-    let socket: WebSocket;
+    wasmStore.subscribe(value => {wasm = value})
 
     let points = [];
-
-    // for (let scan of scans.data) {
-    //     let x = Math.sin((scan.angle * Math.PI / 180)) * scan.distance;
-    //     let y = Math.cos((scan.angle * Math.PI / 180)) * scan.distance;
-    //     points.push({time: scan.time, x, y});
-    // }
 
     onMount(async () => {
 
         let stats = new Stats();
+        stats.showPanel(1);
         document.body.appendChild(stats.dom);
 
-        socket = new WebSocket('ws://192.168.178.48:3000/ws');
-
-        socket.onopen = () => {
-            console.log("socket opened")
-        }
-
-        socket.onmessage = (event) => {
-            if (event.data[0] === '@') {
-                // console.log(event.data);
+        readSocketStore.subscribe(value => {
+            if (value[0] === '@') {
+                // console.log(value);
+            } else if (value !== "") {
                 points = [];
-            } else {
-                const [angle, distance] = event.data.split(':');
-                let x = Math.sin((angle * Math.PI / 180)) * distance;
-                let y = Math.cos((angle * Math.PI / 180)) * distance;
-                points.push({x, y});
+                const measure = value.split('!');
+                stats.begin();
+                measure.forEach(m => {
+                    const [angle, distance] = m.split(':');
+
+                    // const loc = wasm.loc(parseFloat(angle), parseFloat(distance));
+                    // console.log(wasm.loc(parseFloat(angle), parseFloat(distance))[0]);
+                    let x = Math.sin((angle * Math.PI / 180)) * distance;
+                    let y = Math.cos((angle * Math.PI / 180)) * distance;
+                    // points.push({x: loc[0], y: loc[1]});
+                    points.push({x: x, y: y});
+                })
+                stats.end();
             }
-        }
-
-        socket.onclose = () => {
-            console.log("socket closed")
-        }
-
-
-
+        })
 
         const canvas: HTMLCanvasElement = document.querySelector(`canvas#three`);
 
@@ -112,7 +106,7 @@
 
         function tick() {
 
-            stats.begin();
+            // stats.begin();
 
             let positions = [];
             for (let point of points) {
@@ -127,26 +121,23 @@
             controls.update(clock.getDelta());
             renderer.render(scene, camera);
 
-            stats.end();
+            // stats.end();
             window.requestAnimationFrame(tick);
         }
 
         renderer.render(scene, camera);
         tick();
     });
-
-    onDestroy(() => {
-        socket != undefined ? socket : null
-    });
 </script>
 
-<style lang="sass">
-    #three
-        position: fixed
-        top: 0
-        left: 0
-        outline: none
-        //z-index: 1030
+<style>
+    #three {
+        position: fixed;
+        top: 0;
+        left: 0;
+        outline: none;
+        z-index: 0;
+    }
 </style>
 
 <canvas id="three"></canvas>
