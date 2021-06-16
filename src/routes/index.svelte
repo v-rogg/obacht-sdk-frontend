@@ -1,5 +1,6 @@
 <script lang='ts'>
     import Three from '$lib/Three/index.svelte';
+    import HzDisplay from '../lib/HzDisplay.svelte';
 </script>
 
 <style lang='sass'>
@@ -12,6 +13,7 @@
 </svelte:head>
 
 <Three/>
+<HzDisplay/>
 
 <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
