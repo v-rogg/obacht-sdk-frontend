@@ -1,6 +1,9 @@
 <script lang='ts'>
     import Three from '$lib/Three/index.svelte';
-    import HzDisplay from '../lib/HzDisplay.svelte';
+    import HzDisplay from '$lib/HzDisplay.svelte';
+    import PingDisplay from '$lib/PingDisplay.svelte';
+    import { tooltip } from '$lib/actions/tooltip';
+
 </script>
 
 <style lang='sass'>
@@ -89,7 +92,10 @@
 
 
 	h1
-		font-family: "Obacht! Display", sans-serif
+        font-family: "Obacht! Display", sans-serif
+        margin: 0 0 .25rem
+        padding: 0
+
 </style>
 
 <svelte:head>
@@ -97,7 +103,11 @@
 </svelte:head>
 
 <Three/>
-<HzDisplay/>
+
+<div class='header'>
+    <h1>SDK Configurator</h1>
+    <div>Your IP <span class='mono'>-></span> 192.168.178.48</div>
+</div>
 
 <div class='box'>
     <div><i class="fas fa-sensor-on margin-right"></i>   Connected Sensors</div>
