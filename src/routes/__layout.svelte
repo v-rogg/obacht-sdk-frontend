@@ -9,8 +9,9 @@
         margin: 0
         padding: 0
         font-family: 'Obacht! Plex Sans', sans-serif
+        overflow: hidden
 
-    a
+    .a
         font-family: 'Obacht! Mono', sans-serif
         color: $purple
 </style>
