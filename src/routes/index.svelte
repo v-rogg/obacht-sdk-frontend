@@ -1,6 +1,6 @@
 <script lang='ts'>
     import Three from '$lib/Three/index.svelte';
-A    import { tooltip } from '$lib/actions/tooltip';
+    import { tooltip } from '$lib/actions/tooltip';
     import { hotkey } from '../lib/actions/hotkeys';
     import { hotkeysStore } from '../store';
 
@@ -23,16 +23,41 @@ A    import { tooltip } from '$lib/actions/tooltip';
         bottom: 2rem
         left: 2rem
 
-    .logo
-        position: fixed
-        bottom: 2.5rem
-        right: 2rem
-        width: 120px
-
     .header
         position: fixed
         top: 2rem
         left: 2rem
+
+    h1
+        margin: 0 0 .5rem
+        padding: 0
+
+    .logo
+        //position: fixed
+        //bottom: 2.5rem
+        //right: 2rem
+        //width: 120px
+        display: block
+        height: 1.75rem
+        padding: 0
+        margin: 0
+
+    h5
+        font-size: $size-small
+        font-weight: $regular
+        margin: 0
+        padding: 0
+        //display: flex
+        //align-items: center
+        line-height: $size-small
+
+        .bold
+            font-family: "Obacht! Display", sans-serif
+            font-weight: $semibold
+            font-size: $size-normal
+            margin-right: .5rem
+            line-height: $size-small
+
 
     nav
         position: fixed
@@ -77,30 +102,19 @@ A    import { tooltip } from '$lib/actions/tooltip';
             border: .5px solid $blue
             box-shadow: $shadow-algolia-black
 
-    h5
-        font-size: $size-small
-        font-weight: 400
-        margin: 0
-        padding: 0
-
-	h1
-        font-family: "Obacht! Display", sans-serif
-        margin: 0 0 .25rem
-        padding: 0
-        font-size: 2rem
 
 </style>
 
 <svelte:head>
-	<title>Obacht! SDK Configurator</title>
+	<title>Obacht! Configurator</title>
 </svelte:head>
 
 
 <Three/>
 
 <div class='header'>
-    <h1>SDK Configurator</h1>
-    <h5>v 0.9beta</h5>
+    <h1><img src='/static/obacht-logo.svg' alt='obacht! logo' class='logo'></h1>
+    <h5><span class='bold'>Configurator</span>v0.9beta</h5>
 </div>
 
 <nav>
@@ -115,7 +129,7 @@ A    import { tooltip } from '$lib/actions/tooltip';
         use:tooltip
         on:click={test}
     >
-        <i class="far fa-chart-network event-none"></i>
+        <i class="fak fa-sensor-points-regular event-none"></i>
     </div>
     <div
         title='Show Person Positions'
@@ -131,9 +145,3 @@ A    import { tooltip } from '$lib/actions/tooltip';
 <div class='compass'>
     <img src='/static/compass.png' alt='compass' title='Compass is linked to the rotation of the map' use:tooltip>
 </div>
-
-<div class='logo'>
-    <img src='/static/obacht-logo.svg' alt='obacht! logo'>
-</div>
-
-
