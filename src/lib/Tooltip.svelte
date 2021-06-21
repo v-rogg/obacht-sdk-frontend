@@ -27,7 +27,7 @@
 
         /* if backdrop support: very transparent and blurred */
         @supports ((-webkit-backdrop-filter: blur(4px)) or (backdrop-filter: blur(4px)))
-            background: transparentize($white, .5)
+            background: rgba($white, .5)
             backdrop-filter: blur(4px)
 
         .margin-right
