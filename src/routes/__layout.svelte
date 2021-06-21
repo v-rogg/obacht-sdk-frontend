@@ -1,5 +1,10 @@
 <script lang="ts">
-    import "../style/fonts.sass";
+    import '../style/fonts.sass';
+    import Sensors from '$lib/Sensors.svelte';
+    import { hotkeysStore } from '../store';
+
+    export let hotkeys;
+    hotkeysStore.set(hotkeys);
 </script>
 
 <style lang="sass" global>
@@ -18,6 +23,8 @@
 
 <main>
 	<slot/>
+    <Sensors/>
+
 </main>
 
 
