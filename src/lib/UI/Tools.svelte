@@ -1,21 +1,19 @@
 <script lang="ts">
-    import { tooltip } from "$lib/actions/tooltip";
-    import { hotkey } from "$lib/actions/hotkeys";
-    import { hotkeysStore } from "$lib/../store";
+    import { hotkeysStore } from '$lib/../store';
+    import UIButton from './UIButton.svelte';
 
-    let hotkeysProxy = "";
-    let active: string = "hand";
+    let hotkeysProxy = '';
+    let active: string = 'hand';
 
     hotkeysStore.subscribe(val => {
         hotkeysProxy = val;
-    })
+    });
 
     function selectTool(tool: string) {
         if (active !== tool) {
             active = tool;
         }
     }
-
 </script>
 
 <style lang="sass">
@@ -30,68 +28,39 @@
         top: 50%
         transform: translateY(-50%)
 
-        > div
-            background: $white
-            width: 4rem
-            height: 4rem
-            font-size: 1.5rem
-            display: flex
-            justify-content: center
-            align-items: center
-            border-radius: $border-radius
-            color: $normal-grey
-
-            &:hover:not(.open)
-                cursor: pointer
-
-            &:active:not(.open)
-                background: $light-grey
-                color: $black
-
-        .active
-            background: $light-grey
-            color: $black
 </style>
 
 <section class="layers">
-    <div
-            class:active={active === "hand"}
-            title="Hand"
-            hotkey={hotkeysProxy.toolHand}
-            use:hotkey
-            use:tooltip
-            on:click={() => selectTool("hand")}
+    <UIButton
+        active={active === "hand"}
+        title="Hand"
+        hotkey={hotkeysProxy.toolHand}
+        on:click={() => selectTool("hand")}
     >
         <i class="fas fa-hand event-none"></i>
-    </div>
-    <div
-            class:active={active === "zones"}
-            title="Zones"
-            hotkey={hotkeysProxy.toolZones}
-            use:hotkey
-            use:tooltip
-            on:click={() => selectTool("zones")}
+    </UIButton>
+    <UIButton
+        active={active === "zones"}
+        title="Zones"
+        hotkey={hotkeysProxy.toolZones}
+        on:click={() => selectTool("zones")}
     >
         <i class="fas fa-draw-polygon event-none"></i>
-    </div>
-    <div
-            class:active={active === "sensors"}
-            title="Sensor Locations"
-            hotkey={hotkeysProxy.toolSensorLocations}
-            use:hotkey
-            use:tooltip
-            on:click={() => selectTool("sensors")}
+    </UIButton>
+    <UIButton
+        active={active === "sensors"}
+        title="Sensor Locations"
+        hotkey={hotkeysProxy.toolSensorLocations}
+        on:click={() => selectTool("sensors")}
     >
         <i class="fas fa-location-crosshairs event-none"></i>
-    </div>
-    <div
-            class:active={active === "origin"}
-            title="Map Origin"
-            hotkey={hotkeysProxy.toolMapOrigin}
-            use:hotkey
-            use:tooltip
-            on:click={() => selectTool("origin")}
+    </UIButton>
+    <UIButton
+        active={active === "origin"}
+        title="Map Origin"
+        hotkey={hotkeysProxy.toolMapOrigin}
+        on:click={() => selectTool("origin")}
     >
         <i class="fas fa-crosshairs event-none"></i>
-    </div>
+    </UIButton>
 </section>

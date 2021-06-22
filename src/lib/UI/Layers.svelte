@@ -1,19 +1,18 @@
 <script lang="ts">
-    import { tooltip } from "$lib/actions/tooltip";
-    import { hotkey } from "$lib/actions/hotkeys";
-    import { hotkeysStore } from "$lib/../store";
+    import { hotkeysStore } from '$lib/../store';
+    import UIButton from './UIButton.svelte';
 
-    let hotkeysProxy = "";
+    let hotkeysProxy = '';
     let actives: string[] = [];
 
     hotkeysStore.subscribe(val => {
         hotkeysProxy = val;
-    })
+    });
 
     function switchLayer(layer: string) {
         if (actives.indexOf(layer) !== -1) {
-            actives.splice(actives.indexOf(layer), 1)
-            actives = actives
+            actives.splice(actives.indexOf(layer), 1);
+            actives = actives;
         } else {
             actives = [...actives, layer];
         }
@@ -57,44 +56,36 @@
 </style>
 
 <section class="layers">
-    <div
-            class:active={actives.indexOf("layerSensors") !== -1}
-            title="Sensor Positions"
+    <UIButton
+            active={actives.indexOf("layerSensors") !== -1}
+            title="Sensors"
             hotkey={hotkeysProxy.layerSensors}
-            use:hotkey
-            use:tooltip
             on:click={() => switchLayer("layerSensors")}
     >
         <i class="fas fa-sensor-on event-none"></i>
-    </div>
-    <div
-            class:active={actives.indexOf("layerRawData") !== -1}
-            title="Sensor Raw Data"
+    </UIButton>
+    <UIButton
+            active={actives.indexOf("layerRawData") !== -1}
+            title="Raw Data"
             hotkey={hotkeysProxy.layerRawData}
-            use:hotkey
-            use:tooltip
             on:click={() => switchLayer("layerRawData")}
     >
         <i class="fak fa-sensor-points-regular event-none"></i>
-    </div>
-    <div
-            class:active={actives.indexOf("layerPersons") !== -1}
-            title="Person Positions"
+    </UIButton>
+    <UIButton
+            active={actives.indexOf("layerPersons") !== -1}
+            title="Persons"
             hotkey={hotkeysProxy.layerPersons}
-            use:hotkey
-            use:tooltip
             on:click={() => switchLayer("layerPersons")}
     >
         <i class="fas fa-person event-none"></i>
-    </div>
-    <div
-            class:active={actives.indexOf("layerMap") !== -1}
+    </UIButton>
+    <UIButton
+            active={actives.indexOf("layerMap") !== -1}
             title="Map"
             hotkey={hotkeysProxy.layerMap}
-            use:hotkey
-            use:tooltip
             on:click={() => switchLayer("layerMap")}
     >
         <i class="fas fa-map event-none"></i>
-    </div>
+    </UIButton>
 </section>
