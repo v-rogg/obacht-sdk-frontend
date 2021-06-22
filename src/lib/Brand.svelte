@@ -5,16 +5,14 @@
         position: fixed
         top: 2rem
         right: 2rem
+        display: flex
+        flex-direction: column
 
     h1
         margin: 0 0 .5rem
         padding: 0
 
     .logo
-        //position: fixed
-        //bottom: 2.5rem
-        //right: 2rem
-        //width: 120px
         display: block
         height: 1.75rem
         padding: 0
@@ -23,11 +21,10 @@
     h5
         font-size: $size-small
         font-weight: $regular
-        margin: 0
         padding: 0
-        //display: flex
-        //align-items: center
         line-height: $size-small
+        margin: 0
+        align-self: flex-end
 
         .bold
             font-family: "Obacht! Display", sans-serif
