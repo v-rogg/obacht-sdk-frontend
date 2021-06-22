@@ -24,7 +24,7 @@
         display: inline-flex
         width: 70px
         text-align: right
-        justify-content: end
+        justify-content: flex-end
 
         >*
             pointer-events: none

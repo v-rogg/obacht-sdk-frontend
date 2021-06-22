@@ -40,7 +40,7 @@
         display: inline-flex
         width: 85px
         text-align: right
-        justify-content: end
+        justify-content: flex-end
 
         >*
             pointer-events: none
