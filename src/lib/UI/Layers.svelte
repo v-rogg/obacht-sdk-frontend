@@ -1,23 +1,32 @@
 <script lang="ts">
-    import { hotkeysStore } from '$lib/../store';
-    import UIButton from './UIButton.svelte';
+    import { hotkeysStore, layersStore } from '$lib/../store';
+    import UIButton from "$lib/UI/UIButton.svelte";
+    import { onDestroy } from 'svelte';
 
     let hotkeysProxy = '';
-    let actives: string[] = ["layerSensors", "layerRawData"];
+    let layers: string[] = ["layerSensors", "layerRawData"];
 
-    hotkeysStore.subscribe(val => {
+    const unsubHotkeys = hotkeysStore.subscribe(val => {
         hotkeysProxy = val;
     });
 
+    const unsubLayersStore = layersStore.subscribe(val => {
+        layers = val;
+    })
+
     function switchLayer(layer: string) {
-        if (actives.indexOf(layer) !== -1) {
-            actives.splice(actives.indexOf(layer), 1);
-            actives = actives;
+        if (layers.indexOf(layer) !== -1) {
+            layers.splice(layers.indexOf(layer), 1);
+            layersStore.set(layers);
         } else {
-            actives = [...actives, layer];
+            layersStore.set([...layers, layer]);
         }
     }
 
+    onDestroy(() => {
+        unsubHotkeys()
+        unsubLayersStore()
+    })
 </script>
 
 <style lang="sass">
@@ -57,7 +66,7 @@
 
 <section class="layers">
     <UIButton
-            active={actives.indexOf("layerSensors") !== -1}
+            active={layers.indexOf("layerSensors") !== -1}
             title="Sensors"
             hotkey={hotkeysProxy.layerSensors}
             on:click={() => switchLayer("layerSensors")}
@@ -65,7 +74,7 @@
         <i class="fas fa-sensor-on event-none"></i>
     </UIButton>
     <UIButton
-            active={actives.indexOf("layerRawData") !== -1}
+            active={layers.indexOf("layerRawData") !== -1}
             title="Raw Data"
             hotkey={hotkeysProxy.layerRawData}
             on:click={() => switchLayer("layerRawData")}
@@ -73,7 +82,7 @@
         <i class="fak fa-sensor-points-regular event-none"></i>
     </UIButton>
     <UIButton
-            active={actives.indexOf("layerPersons") !== -1}
+            active={layers.indexOf("layerPersons") !== -1}
             title="Persons"
             hotkey={hotkeysProxy.layerPersons}
             on:click={() => switchLayer("layerPersons")}
@@ -81,7 +90,7 @@
         <i class="fas fa-person event-none"></i>
     </UIButton>
     <UIButton
-            active={actives.indexOf("layerMap") !== -1}
+            active={layers.indexOf("layerMap") !== -1}
             title="Map"
             hotkey={hotkeysProxy.layerMap}
             on:click={() => switchLayer("layerMap")}

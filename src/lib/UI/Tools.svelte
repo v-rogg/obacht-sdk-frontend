@@ -1,19 +1,30 @@
 <script lang="ts">
-    import { hotkeysStore } from '$lib/../store';
-    import UIButton from './UIButton.svelte';
+    import { hotkeysStore, toolStore } from "$lib/../store";
+    import { onDestroy } from 'svelte';
+    import UIButton from "$lib/UI/UIButton.svelte";
 
-    let hotkeysProxy = '';
-    let active: string = 'hand';
+    let hotkeys = "";
+    let tool: string = "hand";
 
-    hotkeysStore.subscribe(val => {
-        hotkeysProxy = val;
+    const unsubHotkeyStore = hotkeysStore.subscribe(val => {
+        hotkeys = val;
     });
 
-    function selectTool(tool: string) {
-        if (active !== tool) {
-            active = tool;
+    const unsubToolStore = toolStore.subscribe(val => {
+        tool = val
+
+    });
+
+    function selectTool(val: string) {
+        if (tool !== val) {
+            toolStore.set(val);
         }
     }
+
+    onDestroy(() => {
+        unsubHotkeyStore();
+        unsubToolStore();
+    })
 </script>
 
 <style lang="sass">
@@ -32,33 +43,33 @@
 
 <section class="layers">
     <UIButton
-        active={active === "hand"}
+        active={tool === "hand"}
         title="Hand"
-        hotkey={hotkeysProxy.toolHand}
+        hotkey={hotkeys.toolHand}
         on:click={() => selectTool("hand")}
     >
         <i class="fas fa-hand event-none"></i>
     </UIButton>
     <UIButton
-        active={active === "zones"}
+        active={tool === "zones"}
         title="Zones"
-        hotkey={hotkeysProxy.toolZones}
+        hotkey={hotkeys.toolZones}
         on:click={() => selectTool("zones")}
     >
         <i class="fas fa-draw-polygon event-none"></i>
     </UIButton>
     <UIButton
-        active={active === "sensors"}
+        active={tool === "sensors"}
         title="Sensor Locations"
-        hotkey={hotkeysProxy.toolSensorLocations}
+        hotkey={hotkeys.toolSensorLocations}
         on:click={() => selectTool("sensors")}
     >
         <i class="fas fa-location-crosshairs event-none"></i>
     </UIButton>
     <UIButton
-        active={active === "origin"}
+        active={tool === "origin"}
         title="Map Origin"
-        hotkey={hotkeysProxy.toolMapOrigin}
+        hotkey={hotkeys.toolMapOrigin}
         on:click={() => selectTool("origin")}
     >
         <i class="fas fa-crosshairs event-none"></i>

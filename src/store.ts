@@ -14,3 +14,6 @@ export const socketStore = readable("", set => {
 });
 
 export const hotkeysStore = writable("");
+
+export const layersStore = writable(["layerSensors", "layerRawData"]);
+export const toolStore = writable("zones");
