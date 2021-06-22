@@ -8,7 +8,10 @@ export async function get() {
             toolHand: "H",
             toolZones: "Z",
             toolSensorLocations: "L",
-            toolMapOrigin: "O"
+            toolMapOrigin: "O",
+            toolPause: "Space",
+            toolRecording: "Enter",
+            toolOutput: "E",
         }
     }
 }
