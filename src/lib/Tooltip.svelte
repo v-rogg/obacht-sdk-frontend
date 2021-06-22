@@ -30,25 +30,18 @@
         display: inline-flex
         justify-content: center
         align-items: center
-        padding: 0 .5rem
+        margin: 6px
         font-size: .6875rem
         position: relative
-        transform: translateY(-2px)
+        transform: translateY(-1px)
 
-        &:before
-            content: ""
-            position: absolute
-            width: 1.375rem
-            height: 1.375rem
+        &--outer
             border-radius: $border-radius
             border: .75px solid $black
-            top: -4px
+            padding: 3px 3px 4px 3px
 
-        &:after
-            content: ""
-            position: absolute
-            width: 1rem
-            height: 1rem
+        &--inner
+            margin: 2px 0 4px 0
             border-radius: $border-radius
             border: .75px solid $black
 </style>
@@ -65,8 +58,12 @@
             {title}
         </span>
         {#if key}
-            <span class="hotkey">
-                {key.toUpperCase()}
+            <span class="hotkey--outer">
+                <span class="hotkey--inner">
+                    <span class="hotkey">
+                        {key.toUpperCase()}
+                    </span>
+                </span>
             </span>
         {/if}
     </div>
@@ -76,8 +73,12 @@
             right: {(innerWidth/16) - (x/16) - .25}rem;
         ">
         {#if key}
-            <span class="hotkey">
-                {key.toUpperCase()}
+            <span class="hotkey--outer">
+                <span class="hotkey--inner">
+                    <span class="hotkey">
+                        {key.toUpperCase()}
+                    </span>
+                </span>
             </span>
         {/if}
         <span class="margin-left">
