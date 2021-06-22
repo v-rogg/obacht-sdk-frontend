@@ -32,25 +32,25 @@
 <section class="layers">
     <UIButton
         active={true}
-        title="Hand"
+        title="Snapshot"
         hotkey={hotkeys.toolPause}
-        on:click={() => {}}
+        on:click={() => {console.log('pause')}}
     >
         <i class="fas fa-pause event-none"></i>
     </UIButton>
     <UIButton
         active={true}
-        title="Zones"
+        title="Record"
         hotkey={hotkeys.toolRecording}
-        on:click={() => {}}
+        on:click={() => {console.log('recording')}}
     >
         <i class="fas fa-circle event-none red"></i>
     </UIButton>
     <UIButton
         active={true}
-        title="Sensor Locations"
+        title="Output options"
         hotkey={hotkeys.toolOutput}
-        on:click={() => {}}
+        on:click={() => {console.log('output options')}}
     >
         <i class="fas fa-arrow-right event-none"></i>
     </UIButton>
