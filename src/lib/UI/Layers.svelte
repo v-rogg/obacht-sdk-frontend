@@ -1,7 +1,7 @@
 <script lang="ts">
     import { tooltip } from "$lib/actions/tooltip";
     import { hotkey } from "$lib/actions/hotkeys";
-    import { hotkeysStore } from "../store";
+    import { hotkeysStore } from "$lib/../store";
 
     let hotkeysProxy = "";
     let actives: string[] = [];
@@ -49,6 +49,7 @@
 
             &:active:not(.open)
                 background: $light-grey
+                color: $black
 
         .active
             background: $light-grey

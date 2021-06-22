@@ -21,8 +21,8 @@
 <script lang="ts">
     import "../style/fonts.sass";
     import Sensors from "$lib/Sensors.svelte";
-    import Layers from "$lib/Layers.svelte";
-    import Tools from "$lib/Tools.svelte";
+    import Layers from "$lib/UI/Layers.svelte";
+    import Tools from "$lib/UI/Tools.svelte";
     import Brand from "$lib/Brand.svelte";
     import { hotkeysStore } from "../store";
 
