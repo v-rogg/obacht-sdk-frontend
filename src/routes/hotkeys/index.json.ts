@@ -4,7 +4,11 @@ export async function get() {
             layerSensors: "H",
             layerRawData: "J",
             layerPersons: "K",
-            layerMap: "L"
+            layerMap: "L",
+            toolHand: "N",
+            toolZones: "I",
+            toolSensorLocations: "O",
+            toolMapOrigin: "P"
         }
     }
 }

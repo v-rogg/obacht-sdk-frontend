@@ -55,8 +55,8 @@
 <section class='layers'>
     <div
             class:active={active === "hand"}
-            title='Sensor Positions'
-            hotkey={hotkeysProxy.layerSensors}
+            title='Hand'
+            hotkey={hotkeysProxy.toolHand}
             use:hotkey
             use:tooltip
             on:click={() => selectTool('hand')}
@@ -65,8 +65,8 @@
     </div>
     <div
             class:active={active === "zones"}
-            title='Sensor Raw Data'
-            hotkey={hotkeysProxy.layerRawData}
+            title='Zones'
+            hotkey={hotkeysProxy.toolZones}
             use:hotkey
             use:tooltip
             on:click={() => selectTool('zones')}
@@ -75,8 +75,8 @@
     </div>
     <div
             class:active={active === "sensors"}
-            title='Person Positions'
-            hotkey={hotkeysProxy.layerPersons}
+            title='Sensor Locations'
+            hotkey={hotkeysProxy.toolSensorLocations}
             use:hotkey
             use:tooltip
             on:click={() => selectTool('sensors')}
@@ -85,8 +85,8 @@
     </div>
     <div
             class:active={active === "origin"}
-            title='Map'
-            hotkey={hotkeysProxy.layerMap}
+            title='Map Origin'
+            hotkey={hotkeysProxy.toolMapOrigin}
             use:hotkey
             use:tooltip
             on:click={() => selectTool('origin')}
