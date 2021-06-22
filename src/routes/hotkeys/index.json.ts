@@ -1,14 +1,14 @@
 export async function get() {
     return {
         body: {
-            layerSensors: "H",
-            layerRawData: "J",
-            layerPersons: "K",
-            layerMap: "L",
-            toolHand: "N",
-            toolZones: "I",
-            toolSensorLocations: "O",
-            toolMapOrigin: "P"
+            layerSensors: "S",
+            layerRawData: "R",
+            layerPersons: "P",
+            layerMap: "M",
+            toolHand: "H",
+            toolZones: "Z",
+            toolSensorLocations: "L",
+            toolMapOrigin: "O"
         }
     }
 }
