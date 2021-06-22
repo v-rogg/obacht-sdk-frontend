@@ -55,7 +55,7 @@
         left: {(x/16) + .25}rem;
     "><i class="far fa-info-circle margin-right"></i>
     <span class='margin-right'>
-    {title}
+        {title}
     </span>
     {#if key}
         <span class='hotkey'>
