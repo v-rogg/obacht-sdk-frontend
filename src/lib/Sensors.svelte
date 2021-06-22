@@ -36,29 +36,20 @@
     @import 'src/style/theme'
 
     .box
-        box-shadow: $shadow-md
+        //box-shadow: $shadow-md
         //width: max-content
         padding: 1rem
         border-radius: $border-radius
         position: fixed
         top: 8rem
         left: 2rem
-        border: .5px solid $light-grey
+        //border: .5px solid $light-grey
         display: grid
         gap: .8rem
         background: $white
         transition: 250ms ease width
         overflow: hidden
-
-        //width: 11rem
-
-        /* slightly transparent fallback */
-        background: rgba($white, .9)
-
-        /* if backdrop support: very transparent and blurred */
-        @supports ((-webkit-backdrop-filter: blur(4px)) or (backdrop-filter: blur(4px)))
-            background: rgba($white, .2)
-            backdrop-filter: blur(4px)
+        background: $light-grey
 
         &:hover
             .close
@@ -81,11 +72,6 @@
         &__text
             margin-right: 1rem
 
-    .mono
-        font-family: "Obacht! Mono", sans-serif
-        margin: 0 .5rem
-        transform: translateY(-1px)
-
     .close
         opacity: 0
         width: 1rem
@@ -93,23 +79,19 @@
         display: flex
         justify-content: center
         align-items: center
-        //background: $medium-grey
-        border-radius: $border-radius
-        //border: 1px solid $black
+        border-radius: $border-radius-small
         padding: .4rem
         cursor: pointer
         transition: 250ms ease all, 0ms ease box-shadow
-        //box-shadow: $shadow-algolia-black
 
         > span
             transition: 500ms ease transform
 
         &:hover
-            //box-shadow: inset $shadow-md
-            background: $light-grey
+            //background: $light-grey
 
         &:active
-            background: $medium-grey
+            background: $white
 
     .rotate180
         transform: rotateY(180deg)
@@ -118,10 +100,15 @@
         position: absolute
         display: inline-flex
         align-items: center
-        width: 500px
-        min-width: 500px
+        //width: 500px
+        min-width: 400px
 
         .sensor__model
+            margin: 0 2rem 0 2rem
+            width: max-content
+
+        .battery
+            margin: 0 0 0 1.5rem
             width: max-content
 </style>
 
@@ -133,8 +120,8 @@
     </div>
     <div class='sensor'><span title='Sensor IP' use:tooltip>192.168.178.110</span>
         {#if open}
-            <span transition:fly={{duration: 150, x: -4, delay: open? 100 : 0}} class='wrap'>
-                <span class='mono'>-></span>   <span class='sensor__model' title='Sensor Model' use:tooltip>RPLidar S1</span>   <span class='mono'>-></span><HzDisplay/> <PingDisplay/>   <span class='mono'>-></span>  <i class="far fa-battery-half margin-right"></i> 69%
+            <span transition:fly={{duration: 150, x: -10, delay: open? 100 : 0}} class='wrap'>
+                <span class='sensor__model' title='Sensor Model' use:tooltip>RPLidar S1</span>   <HzDisplay/> <PingDisplay/>  <span class='battery'><i class="far fa-battery-half margin-right"></i> 69%</span>
             </span>
         {/if}
     </div>

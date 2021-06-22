@@ -2,7 +2,7 @@
     import { socketStore } from '../store';
     import { tooltip } from '$lib/actions/tooltip';
 
-    let ms: number = 0;
+    let ms: string = '000';
 
     socketStore.subscribe(value => {
         if (value[0] === '@') {
@@ -10,7 +10,7 @@
             const date = new Date(time);
             const now = new Date();
             // const offset = -700;
-            ms = now - date;
+            ms = (now - date).toFixed(0);
             // ms = round(msDiff, 1).toFixed(1);
             // console.log(now, date);
 
@@ -31,7 +31,7 @@
 
     #description
         width: 20px
-        margin: 0 0 0 .5rem
+        margin: 0 0 0 .25rem
         text-align: left
 </style>
 

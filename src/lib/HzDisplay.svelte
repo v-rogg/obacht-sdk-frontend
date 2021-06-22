@@ -2,7 +2,7 @@
     import { socketStore } from '../store';
     import { tooltip } from '$lib/actions/tooltip';
 
-    let hz: string = '0';
+    let hz: string = '00.0';
     let oldDate: number;
     let msDiffs: number[30] = [];
 
@@ -38,7 +38,7 @@
 
     .hzDisplay
         display: inline-flex
-        width: 82px
+        width: 85px
         text-align: right
         justify-content: end
 
@@ -47,7 +47,7 @@
 
     #description
         width: 20px
-        margin: 0 0 0 .5rem
+        margin: 0 0 0 .25rem
         text-align: left
 
     #number
@@ -55,11 +55,12 @@
 
     #color
         display: block
-        width: .8rem
-        height: .8rem
+        width: 8px
+        height: 8px
         background: linear-gradient(mix(rgba(white, .42), $green), $green)
         border-radius: 50%
         align-self: center
+        margin-right: calc(25px - 8px - .25rem)
 </style>
 
 <div class='hzDisplay' title='Average Sensor Rotations Per Second based on 30 Samples' use:tooltip>
