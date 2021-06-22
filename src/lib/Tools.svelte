@@ -1,10 +1,10 @@
-<script lang='ts'>
-    import { tooltip } from '$lib/actions/tooltip';
-    import { hotkey } from '$lib/actions/hotkeys';
-    import { hotkeysStore } from '../store';
+<script lang="ts">
+    import { tooltip } from "$lib/actions/tooltip";
+    import { hotkey } from "$lib/actions/hotkeys";
+    import { hotkeysStore } from "../store";
 
     let hotkeysProxy = "";
-    let active: string = 'hand';
+    let active: string = "hand";
 
     hotkeysStore.subscribe(val => {
         hotkeysProxy = val;
@@ -18,8 +18,8 @@
 
 </script>
 
-<style lang='sass'>
-    @import './src/style/theme'
+<style lang="sass">
+    @import "./src/style/theme"
 
     section
         position: fixed
@@ -52,44 +52,44 @@
             color: $black
 </style>
 
-<section class='layers'>
+<section class="layers">
     <div
             class:active={active === "hand"}
-            title='Hand'
+            title="Hand"
             hotkey={hotkeysProxy.toolHand}
             use:hotkey
             use:tooltip
-            on:click={() => selectTool('hand')}
+            on:click={() => selectTool("hand")}
     >
         <i class="fas fa-hand event-none"></i>
     </div>
     <div
             class:active={active === "zones"}
-            title='Zones'
+            title="Zones"
             hotkey={hotkeysProxy.toolZones}
             use:hotkey
             use:tooltip
-            on:click={() => selectTool('zones')}
+            on:click={() => selectTool("zones")}
     >
         <i class="fas fa-draw-polygon event-none"></i>
     </div>
     <div
             class:active={active === "sensors"}
-            title='Sensor Locations'
+            title="Sensor Locations"
             hotkey={hotkeysProxy.toolSensorLocations}
             use:hotkey
             use:tooltip
-            on:click={() => selectTool('sensors')}
+            on:click={() => selectTool("sensors")}
     >
         <i class="fas fa-location-crosshairs event-none"></i>
     </div>
     <div
             class:active={active === "origin"}
-            title='Map Origin'
+            title="Map Origin"
             hotkey={hotkeysProxy.toolMapOrigin}
             use:hotkey
             use:tooltip
-            on:click={() => selectTool('origin')}
+            on:click={() => selectTool("origin")}
     >
         <i class="fas fa-crosshairs event-none"></i>
     </div>

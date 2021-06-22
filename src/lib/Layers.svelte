@@ -1,7 +1,7 @@
-<script lang='ts'>
-    import { tooltip } from '$lib/actions/tooltip';
-    import { hotkey } from '$lib/actions/hotkeys';
-    import { hotkeysStore } from '../store';
+<script lang="ts">
+    import { tooltip } from "$lib/actions/tooltip";
+    import { hotkey } from "$lib/actions/hotkeys";
+    import { hotkeysStore } from "../store";
 
     let hotkeysProxy = "";
     let actives: string[] = [];
@@ -21,8 +21,8 @@
 
 </script>
 
-<style lang='sass'>
-    @import './src/style/theme'
+<style lang="sass">
+    @import "./src/style/theme"
 
     section
         position: fixed
@@ -55,44 +55,44 @@
             color: $black
 </style>
 
-<section class='layers'>
+<section class="layers">
     <div
-            class:active={actives.indexOf('layerSensors') !== -1}
-            title='Sensor Positions'
+            class:active={actives.indexOf("layerSensors") !== -1}
+            title="Sensor Positions"
             hotkey={hotkeysProxy.layerSensors}
             use:hotkey
             use:tooltip
-            on:click={() => switchLayer('layerSensors')}
+            on:click={() => switchLayer("layerSensors")}
     >
         <i class="fas fa-sensor-on event-none"></i>
     </div>
     <div
-            class:active={actives.indexOf('layerRawData') !== -1}
-            title='Sensor Raw Data'
+            class:active={actives.indexOf("layerRawData") !== -1}
+            title="Sensor Raw Data"
             hotkey={hotkeysProxy.layerRawData}
             use:hotkey
             use:tooltip
-            on:click={() => switchLayer('layerRawData')}
+            on:click={() => switchLayer("layerRawData")}
     >
         <i class="fak fa-sensor-points-regular event-none"></i>
     </div>
     <div
-            class:active={actives.indexOf('layerPersons') !== -1}
-            title='Person Positions'
+            class:active={actives.indexOf("layerPersons") !== -1}
+            title="Person Positions"
             hotkey={hotkeysProxy.layerPersons}
             use:hotkey
             use:tooltip
-            on:click={() => switchLayer('layerPersons')}
+            on:click={() => switchLayer("layerPersons")}
     >
         <i class="fas fa-person event-none"></i>
     </div>
     <div
-            class:active={actives.indexOf('layerMap') !== -1}
-            title='Map'
+            class:active={actives.indexOf("layerMap") !== -1}
+            title="Map"
             hotkey={hotkeysProxy.layerMap}
             use:hotkey
             use:tooltip
-            on:click={() => switchLayer('layerMap')}
+            on:click={() => switchLayer("layerMap")}
     >
         <i class="fas fa-map event-none"></i>
     </div>

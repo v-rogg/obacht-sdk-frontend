@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
     export let title;
     export let x;
     export let y;
@@ -9,8 +9,8 @@
     $: right = (x < innerWidth/2);
 </script>
 
-<style lang='sass'>
-    @import 'src/style/theme'
+<style lang="sass">
+    @import "src/style/theme"
 
     div
         background: $normal-grey
@@ -36,7 +36,7 @@
         transform: translateY(-2px)
 
         &:before
-            content: ''
+            content: ""
             position: absolute
             width: 1.375rem
             height: 1.375rem
@@ -45,7 +45,7 @@
             top: -4px
 
         &:after
-            content: ''
+            content: ""
             position: absolute
             width: 1rem
             height: 1rem
@@ -61,11 +61,11 @@
             left: {(x/16) + .25}rem;
         ">
         <i class="far fa-info-circle margin-right"></i>
-        <span class='margin-right'>
+        <span class="margin-right">
             {title}
         </span>
         {#if key}
-            <span class='hotkey'>
+            <span class="hotkey">
                 {key.toUpperCase()}
             </span>
         {/if}
@@ -76,11 +76,11 @@
             right: {(innerWidth/16) - (x/16) - .25}rem;
         ">
         {#if key}
-            <span class='hotkey'>
+            <span class="hotkey">
                 {key.toUpperCase()}
             </span>
         {/if}
-        <span class='margin-left'>
+        <span class="margin-left">
             {title}
         </span>
         <i class="far fa-info-circle margin-left"></i>

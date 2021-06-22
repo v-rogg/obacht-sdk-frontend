@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
     export async function load({fetch}) {
-        const url = `/hotkeys.json`;
+        const url = "/hotkeys.json";
         const res = await fetch(url);
 
         if (res.ok) {
@@ -19,14 +19,14 @@
 </script>
 
 <script lang="ts">
-    import '../style/fonts.sass';
-    import Sensors from '$lib/Sensors.svelte';
-    import Layers from '$lib/Layers.svelte';
-    import Tools from '$lib/Tools.svelte';
-    import Brand from '$lib/Brand.svelte';
-    import { hotkeysStore } from '../store';
+    import "../style/fonts.sass";
+    import Sensors from "$lib/Sensors.svelte";
+    import Layers from "$lib/Layers.svelte";
+    import Tools from "$lib/Tools.svelte";
+    import Brand from "$lib/Brand.svelte";
+    import { hotkeysStore } from "../store";
 
-    export let hotkeys = '';
+    export let hotkeys = "";
     hotkeysStore.set(hotkeys);
 </script>
 
@@ -36,12 +36,12 @@
     body
         margin: 0
         padding: 0
-        font-family: 'Obacht! Plex Sans', sans-serif
+        font-family: "Obacht! Plex Sans", sans-serif
         overflow: hidden
         background: $white
 
     .a
-        font-family: 'Obacht! Mono', sans-serif
+        font-family: "Obacht! Mono", sans-serif
         color: $purple
 
     .event-none

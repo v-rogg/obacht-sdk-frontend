@@ -1,12 +1,12 @@
 <script lang="ts">
-    import { socketStore } from '../store';
-    import { tooltip } from '$lib/actions/tooltip';
+    import { socketStore } from "../store";
+    import { tooltip } from "$lib/actions/tooltip";
 
-    let ms: string = '000';
+    let ms: string = "000";
 
     socketStore.subscribe(value => {
-        if (value[0] === '@') {
-            const time = value.split(';')[1];
+        if (value[0] === "@") {
+            const time = value.split(";")[1];
             const date = new Date(time);
             const now = new Date();
             // const offset = -700;
@@ -19,7 +19,7 @@
     })
 </script>
 
-<style lang='sass'>
+<style lang="sass">
     .pingDisplay
         display: inline-flex
         width: 70px
@@ -35,6 +35,6 @@
         text-align: left
 </style>
 
-<span class='pingDisplay' title='Time Offset between Sensor and Browser + Ping' use:tooltip>
-    <span id='number'>{ms}</span> <span id='description'>ms</span>
+<span class="pingDisplay" title="Time Offset between Sensor and Browser + Ping" use:tooltip>
+    <span id="number">{ms}</span> <span id="description">ms</span>
 </span>

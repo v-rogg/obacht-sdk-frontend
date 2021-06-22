@@ -1,5 +1,5 @@
 <style lang='sass'>
-    @import "../style/theme.sass"
+    @import '../style/theme.sass'
 
     .brand
         position: fixed
@@ -27,7 +27,7 @@
         align-self: flex-end
 
         .bold
-            font-family: "Obacht! Display", sans-serif
+            font-family: 'Obacht! Display', sans-serif
             font-weight: $semibold
             font-size: $size-normal
             margin-right: .5rem

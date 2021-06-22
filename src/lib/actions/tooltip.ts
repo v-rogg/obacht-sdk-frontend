@@ -1,4 +1,4 @@
-import Tooltip from '$lib/Tooltip.svelte';
+import Tooltip from "$lib/Tooltip.svelte";
 
 export function tooltip(node, key?) {
     let title;
@@ -8,9 +8,9 @@ export function tooltip(node, key?) {
     function mouseOver(event) {
         // NOTE: remove the `title` attribute, to prevent showing the default browser tooltip
         // remember to set it back on `mouseleave`
-        title = node.getAttribute('title');
-        node.removeAttribute('title');
-        hotkey = node.getAttribute('hotkey');
+        title = node.getAttribute("title");
+        node.removeAttribute("title");
+        hotkey = node.getAttribute("hotkey");
 
         tooltipComponent = new Tooltip({
             props: {
@@ -31,18 +31,18 @@ export function tooltip(node, key?) {
     function mouseLeave() {
         tooltipComponent.$destroy();
         // NOTE: restore the `title` attribute
-        node.setAttribute('title', title);
+        node.setAttribute("title", title);
     }
 
-    node.addEventListener('mouseover', mouseOver);
-    node.addEventListener('mouseleave', mouseLeave);
-    node.addEventListener('mousemove', mouseMove);
+    node.addEventListener("mouseover", mouseOver);
+    node.addEventListener("mouseleave", mouseLeave);
+    node.addEventListener("mousemove", mouseMove);
 
     return {
         destroy() {
-            node.removeEventListener('mouseover', mouseOver);
-            node.removeEventListener('mouseleave', mouseLeave);
-            node.removeEventListener('mousemove', mouseMove);
+            node.removeEventListener("mouseover", mouseOver);
+            node.removeEventListener("mouseleave", mouseLeave);
+            node.removeEventListener("mousemove", mouseMove);
         }
     }
 }

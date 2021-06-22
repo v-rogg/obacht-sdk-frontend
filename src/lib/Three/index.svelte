@@ -1,9 +1,9 @@
-<script lang='ts'>
-    import * as THREE from 'three';
-    import CameraControls from 'camera-controls';
-    import { onMount } from 'svelte';
-    import Stats from 'stats.js';
-    import { socketStore } from '../../store';
+<script lang="ts">
+    import * as THREE from "three";
+    import CameraControls from "camera-controls";
+    import { onMount } from "svelte";
+    import Stats from "stats.js";
+    import { socketStore } from "../../store";
     CameraControls.install( {THREE: THREE } );
 
     let points = [];
@@ -15,14 +15,14 @@
         // document.body.appendChild(stats.dom);
 
         socketStore.subscribe(value => {
-            if (value[0] === '@') {
+            if (value[0] === "@") {
                 // console.log(value);
             } else if (value !== "") {
                 points = [];
-                const measure = value.split('!');
+                const measure = value.split("!");
                 // stats.begin();
                 measure.forEach(m => {
-                    const [angle, distance] = m.split(';');
+                    const [angle, distance] = m.split(";");
 
                     // const loc = wasm.loc(parseFloat(angle), parseFloat(distance));
                     // console.log(wasm.loc(parseFloat(angle), parseFloat(distance))[0]);
@@ -43,7 +43,7 @@
         };
 
         const scene: THREE.Scene = new THREE.Scene();
-        // scene.background = new THREE.Color('white');
+        // scene.background = new THREE.Color("white");
 
         // const geometry = new THREE.BoxGeometry();
         // const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
@@ -63,7 +63,7 @@
         const camera = new THREE.OrthographicCamera(-5 * aspectRatio, 5 * aspectRatio, 5, -5, 0.1, 100);
         camera.position.y = 10;
 
-        window.addEventListener('resize', () => {
+        window.addEventListener("resize", () => {
             sizes = {
                 width: window.innerWidth,
                 height: window.innerHeight
@@ -109,7 +109,7 @@
                         point.y / 1000,
                 )
             }
-            tgeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+            tgeometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
 
             controls.update(clock.getDelta());
             renderer.render(scene, camera);
