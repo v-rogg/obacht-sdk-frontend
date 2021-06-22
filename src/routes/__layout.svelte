@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-    export async function load({ page, fetch, session, context }) {
+    export async function load({fetch}) {
         const url = `/hotkeys.json`;
         const res = await fetch(url);
 
@@ -22,8 +22,9 @@
     import '../style/fonts.sass';
     import Sensors from '$lib/Sensors.svelte';
     import { hotkeysStore } from '../store';
+    import Layers from '$lib/Layers.svelte';
 
-    export let hotkeys;
+    export let hotkeys = "";
     hotkeysStore.set(hotkeys);
 </script>
 
@@ -49,6 +50,7 @@
 
 	<slot/>
     <Sensors/>
+    <Layers/>
 
 </main>
 

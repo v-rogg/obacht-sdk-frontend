@@ -1,8 +1,10 @@
 export async function get() {
     return {
         body: {
+            layerSensors: "H",
             layerRawData: "J",
-            layerPersons: "L"
+            layerPersons: "K",
+            layerMap: "L"
         }
     }
 }
