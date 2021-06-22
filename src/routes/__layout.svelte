@@ -23,8 +23,9 @@
     import Sensors from '$lib/Sensors.svelte';
     import { hotkeysStore } from '../store';
     import Layers from '$lib/Layers.svelte';
+    import Tools from '$lib/Tools.svelte';
 
-    export let hotkeys = "";
+    export let hotkeys = '';
     hotkeysStore.set(hotkeys);
 </script>
 
@@ -51,6 +52,7 @@
 	<slot/>
     <Sensors/>
     <Layers/>
+    <Tools/>
 
 </main>
 
