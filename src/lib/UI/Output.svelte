@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import UIButton from "$lib/UI/UIButton.svelte";
     import { hotkeysStore } from "$lib/../store";
     import { onDestroy } from "svelte";
@@ -16,11 +16,12 @@
 
 <style lang="sass">
     @import "./src/style/theme"
+    @import "./src/style/ui-grid"
 
     section
-        position: fixed
-        display: flex
-        gap: 2rem
+        //position: fixed
+        //display: flex
+        //gap: 1.5rem
         left: 50%
         bottom: 2rem
         transform: translateX(-50%)
@@ -29,7 +30,7 @@
         color: $red
 </style>
 
-<section class="layers">
+<section class="outputs">
     <UIButton
         active={true}
         title="Snapshot"

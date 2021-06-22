@@ -29,12 +29,10 @@
 
 <style lang="sass">
     @import "./src/style/theme"
+    @import "./src/style/ui-grid"
 
     section
-        position: fixed
-        display: flex
         flex-direction: column
-        gap: 2rem
         right: 2rem
         top: 50%
         transform: translateY(-50%)
