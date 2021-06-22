@@ -3,8 +3,8 @@
 </script>
 
 <script lang="ts">
-    import HzDisplay from "$lib/HzDisplay.svelte";
-    import PingDisplay from "$lib/PingDisplay.svelte";
+    import HzDisplay from "$lib/UI/Sensors/HzDisplay.svelte";
+    import PingDisplay from "$lib/UI/Sensors/PingDisplay.svelte";
     import { tooltip } from "$lib/actions/tooltip";
 
     import { fly } from "svelte/transition";

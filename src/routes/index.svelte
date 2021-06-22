@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Three from "$lib/Three/index.svelte";
+    import Three from "$lib/Three/Three.svelte";
 </script>
 
 <svelte:head>
@@ -8,7 +8,3 @@
 
 
 <Three/>
-
-<!--<div class="compass">-->
-<!--    <img src="/static/compass.png" alt="compass" title="Compass is linked to the rotation of the map" use:tooltip>-->
-<!--</div>-->

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { socketStore } from "../store";
+    import { socketStore } from "$lib/../store";
     import { tooltip } from "$lib/actions/tooltip";
 
     let ms: string = "000";
