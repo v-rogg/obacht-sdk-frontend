@@ -9,8 +9,7 @@
     @import 'src/style/theme'
 
     div
-        border: .5px solid $light-grey
-        box-shadow: $shadow-lg, $shadow-2xl
+        background: $normal-grey
         border-radius: $border-radius
         padding: .5rem .75rem
         position: absolute
@@ -18,20 +17,36 @@
         font-size: .85rem
         overflow: hidden
 
-        /* slightly transparent fallback */
-        background: rgba($white, .9)
-
-        /* if backdrop support: very transparent and blurred */
-        @supports ((-webkit-backdrop-filter: blur(4px)) or (backdrop-filter: blur(4px)))
-            background: rgba($white, .5)
-            backdrop-filter: blur(4px)
-
     .margin-right
-        margin-right: .25rem
+        margin-right: .5rem
 
     .hotkey
-        padding: 1rem
-        background: $light-grey
+        display: inline-flex
+        justify-content: center
+        align-items: center
+        padding: 0 .5rem
+        font-size: .6875rem
+        //background: $light-grey
+        position: relative
+        transform: translateY(-2px)
+
+        &:after
+            content: ''
+            position: absolute
+            width: 1.375rem
+            height: 1.375rem
+            border-radius: $border-radius
+            border: .75px solid $black
+            top: -4px
+
+        &:before
+            content: ''
+            position: absolute
+            width: 1rem
+            height: 1rem
+            border-radius: $border-radius
+            border: .75px solid $black
+            //top: -3px
 </style>
 
 
@@ -39,11 +54,12 @@
         top: {(y/16) + .5}rem;
         left: {(x/16) + .25}rem;
     "><i class="far fa-info-circle margin-right"></i>
+    <span class='margin-right'>
+    {title}
+    </span>
     {#if key}
-        <span class='hotkey margin-right'>
+        <span class='hotkey'>
             {key.toUpperCase()}
         </span>
     {/if}
-
-    {title}
 </div>
