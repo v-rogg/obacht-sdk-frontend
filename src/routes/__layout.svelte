@@ -21,9 +21,10 @@
 <script lang="ts">
     import '../style/fonts.sass';
     import Sensors from '$lib/Sensors.svelte';
-    import { hotkeysStore } from '../store';
     import Layers from '$lib/Layers.svelte';
     import Tools from '$lib/Tools.svelte';
+    import Brand from '$lib/Brand.svelte';
+    import { hotkeysStore } from '../store';
 
     export let hotkeys = '';
     hotkeysStore.set(hotkeys);
@@ -53,6 +54,7 @@
     <Sensors/>
     <Layers/>
     <Tools/>
+    <Brand/>
 
 </main>
 

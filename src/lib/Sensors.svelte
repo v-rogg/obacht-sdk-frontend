@@ -41,7 +41,7 @@
         padding: 1rem
         border-radius: $border-radius
         position: fixed
-        top: 8rem
+        top: 2rem
         left: 2rem
         //border: .5px solid $light-grey
         display: grid
