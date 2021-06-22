@@ -26,11 +26,10 @@
         align-items: center
         padding: 0 .5rem
         font-size: .6875rem
-        //background: $light-grey
         position: relative
         transform: translateY(-2px)
 
-        &:after
+        &:before
             content: ''
             position: absolute
             width: 1.375rem
@@ -39,14 +38,13 @@
             border: .75px solid $black
             top: -4px
 
-        &:before
+        &:after
             content: ''
             position: absolute
             width: 1rem
             height: 1rem
             border-radius: $border-radius
             border: .75px solid $black
-            //top: -3px
 </style>
 
 
