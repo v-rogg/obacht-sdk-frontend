@@ -3,7 +3,7 @@
     import UIButton from './UIButton.svelte';
 
     let hotkeysProxy = '';
-    let actives: string[] = [];
+    let actives: string[] = ["layerSensors", "layerRawData"];
 
     hotkeysStore.subscribe(val => {
         hotkeysProxy = val;
