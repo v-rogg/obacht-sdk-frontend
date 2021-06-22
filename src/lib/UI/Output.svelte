@@ -4,6 +4,7 @@
     import { onDestroy } from "svelte";
 
     let hotkeys = "";
+    let paused = false;
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
         hotkeys = val;
@@ -28,6 +29,9 @@
 
     .red
         color: $red
+
+    .hidden
+        display: none
 </style>
 
 <section class="outputs">
@@ -35,9 +39,14 @@
         active={true}
         title="Snapshot"
         hotkey={hotkeys.toolPause}
-        on:click={() => {console.log('pause')}}
+        on:click={() => {paused = !paused}}
     >
-        <i class="fas fa-pause event-none"></i>
+        <span class:hidden={!paused} class="event-none">
+            <i class="fas fa-play event-none"></i>
+        </span>
+        <span class:hidden={paused} class="event-none">
+            <i class="fas fa-pause event-none"></i>
+        </span>
     </UIButton>
     <UIButton
         active={true}
@@ -53,6 +62,6 @@
         hotkey={hotkeys.toolOutput}
         on:click={() => {console.log('output options')}}
     >
-        <i class="fas fa-arrow-right event-none"></i>
+        <i class="fas fa-right event-none"></i>
     </UIButton>
 </section>
