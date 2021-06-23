@@ -3,7 +3,7 @@
 
     .brand
         position: fixed
-        top: 2rem
+        top: calc(2rem + .5rem)
         right: 2rem
         display: flex
         flex-direction: column
