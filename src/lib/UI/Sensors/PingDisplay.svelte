@@ -2,7 +2,7 @@
     import { socketStore } from "$lib/../store";
     import { tooltip } from "$lib/actions/tooltip";
 
-    let ms: string = "000";
+    let ms: string = "---";
 
     socketStore.subscribe(value => {
         if (value[0] === "@") {
