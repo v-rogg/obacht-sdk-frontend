@@ -2,9 +2,13 @@
     import { socketStore } from "$lib/../store";
     import { tooltip } from "$lib/actions/tooltip";
 
-    let hz: string = "00.0";
+    export let model: number;
+
+    let hz: string = "--.-";
     let oldDate: number;
     let msDiffs: number[30] = [];
+
+    let cls = "";
 
     function round(value, precision) {
         const multiplier = Math.pow(10, precision || 0);
@@ -28,7 +32,29 @@
                 total += v;
             })
             const avg = total / msDiffs.length;
-            hz = round(1000 / avg, 1).toFixed(1);
+            const hzNumber = round(1000 / avg, 1);
+            hz = hzNumber.toFixed(1);
+
+
+            // TODO: Config file
+            let a = 0;
+
+            switch (model) {
+                case 97:
+                    a = 10
+                    break;
+                case 24:
+                    a = 7.7
+                    break;
+            }
+
+            if (hzNumber >= a-.2 && hzNumber <= a+.2) {
+                cls = ""
+            } else if ((hzNumber > a-.5 && hzNumber < a) || (hzNumber < a+.5 && hzNumber > a) ) {
+                cls = "yellow"
+            } else {
+                cls = "red"
+            }
         }
     })
 </script>
@@ -53,16 +79,19 @@
     #number
         width: 40px
 
-    #color
-        display: block
-        width: 8px
-        height: 8px
-        background: linear-gradient(mix(rgba(white, .42), $green), $green)
-        border-radius: 50%
-        align-self: center
-        margin-right: calc(25px - 8px - .25rem)
+    .red
+        color: $red
+
+    .yellow
+        color: $yellow
+
+    .green
+        color: $green
+
+    .hidden
+        display: none
 </style>
 
-<div class="hzDisplay" title="Average Sensor Rotations Per Second based on 30 Samples" use:tooltip>
-    <span id="color"></span><span id="number">{hz}</span> <span id="description">Hz</span>
+<div class="{cls} hzDisplay" title="Average Sensor Rotations Per Second based on 30 Samples" use:tooltip>
+    <span class:hidden={cls === ""}><i class="fas fa-triangle-exclamation"></i></span><span id="number">{hz}</span> <span id="description">Hz</span>
 </div>
