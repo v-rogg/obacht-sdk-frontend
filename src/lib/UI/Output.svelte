@@ -5,6 +5,7 @@
 
     let hotkeys = "";
     let paused = false;
+    let recording = false;
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
         hotkeys = val;
@@ -52,9 +53,14 @@
         active={true}
         title="Record"
         hotkey={hotkeys.toolRecording}
-        on:click={() => {console.log('recording')}}
+        on:click={() => {recording = !recording}}
     >
-        <i class="fas fa-circle event-none red"></i>
+        <span class:hidden={!recording} class="red event-none">
+            <i class="fas fa-circle event-none"></i>
+        </span>
+        <span class:hidden={recording} class="red event-none">
+            <i class="far fa-circle event-none"></i>
+        </span>
     </UIButton>
     <UIButton
         active={true}
