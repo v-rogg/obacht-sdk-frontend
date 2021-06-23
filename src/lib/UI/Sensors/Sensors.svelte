@@ -12,6 +12,7 @@
     import { linear } from "svelte/easing";
 
     let open = true;
+    let model: number = 97;
 
     const openWidth = 525
     const closedWidth = 212
@@ -118,7 +119,7 @@
     <div class="sensor"><span title="Sensor IP" use:tooltip>192.168.178.110</span>
         {#if open}
             <span transition:fly={{duration: 150, x: -10, delay: open? 100 : 0}} class="wrap">
-                <span class="sensor__model" title="Sensor Model" use:tooltip>RPLidar S1</span>   <HzDisplay/> <PingDisplay/>  <span class="battery"><i class="far fa-battery-half margin-right"></i> 69%</span>
+                <span class="sensor__model" title="Sensor Model: {model}" use:tooltip>RPLidar S1</span>   <HzDisplay model={model}/> <PingDisplay/>  <span class="battery" title="Battery estimate" use:tooltip><i class="far fa-battery-half margin-right"></i> 69%</span>
             </span>
         {/if}
     </div>
