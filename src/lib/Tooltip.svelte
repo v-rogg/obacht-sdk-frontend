@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { toolStore } from "../store";
+
     export let title;
     export let x;
     export let y;
@@ -7,6 +9,12 @@
     let innerWidth = 0;
 
     $: right = (x < innerWidth/2);
+
+    let tool: string = "";
+
+    toolStore.subscribe(val => {
+        tool = val;
+    })
 </script>
 
 <style lang="sass">
@@ -48,42 +56,45 @@
 
 <svelte:window bind:innerWidth={innerWidth}/>
 
-{#if right}
-    <div style="
-            top: {(y/16) + .5}rem;
-            left: {(x/16) + .25}rem;
-        ">
-        <i class="far fa-info-circle margin-right"></i>
-        <span class="margin-right">
-            {title}
-        </span>
-        {#if key}
-            <span class="hotkey--outer">
-                <span class="hotkey--inner">
-                    <span class="hotkey">
-                        {key.toUpperCase()}
+
+{#if tool === "hand"}
+    {#if right}
+        <div style="
+                top: {(y/16) + .5}rem;
+                left: {(x/16) + .25}rem;
+            ">
+            <i class="far fa-info-circle margin-right"></i>
+            <span class="margin-right">
+                {title}
+            </span>
+            {#if key}
+                <span class="hotkey--outer">
+                    <span class="hotkey--inner">
+                        <span class="hotkey">
+                            {key.toUpperCase()}
+                        </span>
                     </span>
                 </span>
-            </span>
-        {/if}
-    </div>
-{:else}
-    <div style="
-            top: {(y/16) + .5}rem;
-            right: {(innerWidth/16) - (x/16) - .25}rem;
-        ">
-        {#if key}
-            <span class="hotkey--outer">
-                <span class="hotkey--inner">
-                    <span class="hotkey">
-                        {key.toUpperCase()}
+            {/if}
+        </div>
+    {:else}
+        <div style="
+                top: {(y/16) + .5}rem;
+                right: {(innerWidth/16) - (x/16) - .25}rem;
+            ">
+            {#if key}
+                <span class="hotkey--outer">
+                    <span class="hotkey--inner">
+                        <span class="hotkey">
+                            {key.toUpperCase()}
+                        </span>
                     </span>
                 </span>
+            {/if}
+            <span class="margin-left">
+                {title}
             </span>
-        {/if}
-        <span class="margin-left">
-            {title}
-        </span>
-        <i class="far fa-info-circle margin-left"></i>
-    </div>
+            <i class="far fa-info-circle margin-left"></i>
+        </div>
+    {/if}
 {/if}
