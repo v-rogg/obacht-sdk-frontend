@@ -52,6 +52,7 @@
         active={tool === "zones"}
         title="Zones"
         hotkey={hotkeys.toolZones}
+        disabled
         on:click={() => selectTool("zones")}
     >
         <i class="fas fa-draw-polygon event-none"></i>

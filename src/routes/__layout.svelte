@@ -48,6 +48,9 @@
 
     .event-none
         pointer-events: none
+
+    .hidden
+        display: none
 </style>
 
 <main>

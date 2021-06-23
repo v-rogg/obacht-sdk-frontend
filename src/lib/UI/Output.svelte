@@ -30,9 +30,6 @@
 
     .red
         color: $red
-
-    .hidden
-        display: none
 </style>
 
 <section class="outputs">
