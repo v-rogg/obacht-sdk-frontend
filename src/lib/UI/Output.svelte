@@ -1,18 +1,23 @@
 <script lang="ts">
     import UIButton from "$lib/UI/UIButton.svelte";
-    import { hotkeysStore } from "$lib/../store";
+    import { hotkeysStore, recordingStore } from "$lib/../store";
     import { onDestroy } from "svelte";
 
-    let hotkeys = "";
-    let paused = false;
-    let recording = false;
+    let hotkeys = {};
+    let paused: boolean = false;
+    let recording: boolean = false;
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
         hotkeys = val;
     });
 
+    const unsubRecordingStore = recordingStore.subscribe(val => {
+        recording = val;
+    });
+
     onDestroy(() => {
         unsubHotkeyStore();
+        unsubRecordingStore();
     })
 </script>
 
@@ -50,7 +55,7 @@
         active={true}
         title="Record"
         hotkey={hotkeys.toolRecording}
-        on:click={() => {recording = !recording}}
+        on:click={() => {recordingStore.set(!recording)}}
     >
         <span class:hidden={!recording} class="red event-none">
             <i class="fas fa-circle event-none"></i>
@@ -63,6 +68,7 @@
         active={true}
         title="Output options"
         hotkey={hotkeys.toolOutput}
+        disabled={recording}
         on:click={() => {console.log('output options')}}
     >
         <i class="fas fa-right event-none"></i>

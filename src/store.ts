@@ -17,3 +17,5 @@ export const hotkeysStore = writable("");
 
 export const layersStore = writable(["layerSensors", "layerRawData"]);
 export const toolStore = writable("hand");
+
+export const recordingStore = writable(false);

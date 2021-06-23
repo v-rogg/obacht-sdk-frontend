@@ -39,27 +39,8 @@
         top: 50%
         transform: translateY(-50%)
 
-        > div
-            background: $white
-            width: 4rem
-            height: 4rem
-            font-size: 1.5rem
-            display: flex
-            justify-content: center
-            align-items: center
-            border-radius: $border-radius
-            color: $normal-grey
-
-            &:hover:not(.open)
-                cursor: pointer
-
-            &:active:not(.open)
-                background: $light-grey
-                color: $black
-
-        .active
-            background: $light-grey
-            color: $black
+        @media (max-height: 640px)
+            display: none
 </style>
 
 <section class="layers">

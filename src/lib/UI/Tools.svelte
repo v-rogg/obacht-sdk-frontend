@@ -1,18 +1,21 @@
 <script lang="ts">
-    import { hotkeysStore, toolStore } from "$lib/../store";
+    import { hotkeysStore, toolStore, recordingStore } from "$lib/../store";
     import { onDestroy } from 'svelte';
     import UIButton from "$lib/UI/UIButton.svelte";
 
     let hotkeys = "";
     let tool: string = "hand";
+    let recording: boolean = false;
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
         hotkeys = val;
     });
-
     const unsubToolStore = toolStore.subscribe(val => {
         tool = val
-
+    });
+    const unsubRecordingStore = recordingStore.subscribe(val => {
+        recording = val
+        if (recording) toolStore.set("hand");
     });
 
     function selectTool(val: string) {
@@ -24,6 +27,7 @@
     onDestroy(() => {
         unsubHotkeyStore();
         unsubToolStore();
+        unsubRecordingStore();
     })
 </script>
 
@@ -37,6 +41,8 @@
         top: 50%
         transform: translateY(-50%)
 
+        @media (max-height: 640px)
+            display: none
 </style>
 
 <section class="layers">
@@ -52,7 +58,7 @@
         active={tool === "zones"}
         title="Zones"
         hotkey={hotkeys.toolZones}
-        disabled
+        disabled={recording}
         on:click={() => selectTool("zones")}
     >
         <i class="fas fa-draw-polygon event-none"></i>
@@ -61,6 +67,7 @@
         active={tool === "sensors"}
         title="Sensor Locations"
         hotkey={hotkeys.toolSensorLocations}
+        disabled={recording}
         on:click={() => selectTool("sensors")}
     >
         <i class="fas fa-location-crosshairs event-none"></i>
@@ -69,6 +76,7 @@
         active={tool === "origin"}
         title="Map Origin"
         hotkey={hotkeys.toolMapOrigin}
+        disabled={recording}
         on:click={() => selectTool("origin")}
     >
         <i class="fas fa-crosshairs event-none"></i>

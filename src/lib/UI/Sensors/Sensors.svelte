@@ -13,6 +13,8 @@
 
     let open = true;
     let model: number = 97;
+    let innerWidth = 0;
+    let forced = false
 
     const openWidth = 525
     const closedWidth = 212
@@ -20,7 +22,7 @@
     const width = tweened(openWidth, {
         duration: 125,
         easing: linear
-    })
+    });
 
     function switchOpen() {
         if (open) {
@@ -31,20 +33,31 @@
         open = !open
     }
 
+    function getForcedClosed(innerWidth) {
+        if (innerWidth < 840) {
+            $width = closedWidth;
+            open = false;
+            return true;
+        } else {
+            $width = openWidth;
+            open = true;
+            return false;
+        }
+    }
+
+    $: forceClosed = getForcedClosed(innerWidth);
+
 </script>
 
 <style lang="sass">
     @import "src/style/theme"
 
     .box
-        //box-shadow: $shadow-md
-        //width: max-content
         padding: 1rem
         border-radius: $border-radius
         position: fixed
         top: 2rem
         left: 2rem
-        //border: .5px solid $light-grey
         display: grid
         gap: .8rem
         background: $white
@@ -109,6 +122,8 @@
             margin: 0 0 0 1.5rem
             width: max-content
 </style>
+
+<svelte:window bind:innerWidth={innerWidth}/>
 
 <div class="box" class:open={open} style="width: {$width}px">
 <!--    <div class="header"><div><i class="fas fa-sensor-on margin-right"></i>   Connected Sensors</div><div class="close"><i class="far fa-angle-left"></i></div></div>-->
