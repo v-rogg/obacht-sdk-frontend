@@ -12,7 +12,7 @@ export async function get() {
             toolPause: "Space",
             toolRecording: "Enter",
             toolOutput: "E",
-            toolSettings: "ctrl+P",
+            toolSettings: "CTRL+P",
         }
     }
 }

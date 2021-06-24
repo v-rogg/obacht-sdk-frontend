@@ -1,18 +1,26 @@
 <script lang="ts">
-    import { tooltip } from "$lib/actions/tooltip";
-    import { hotkey as hotkeyAction } from "$lib/actions/hotkeys";
-    import { createEventDispatcher } from 'svelte';
+    import { tooltip } from "$lib/Actions/tooltip";
+    import { hotkey as hotkeyAction } from "$lib/Actions/hotkeys";
+    import { clickOutside } from "$lib/Actions/clickOutside";
+    import { createEventDispatcher } from "svelte";
+    import Popup from "$lib/UI/Popup.svelte";
+    import { fade } from "svelte/transition";
 
     export let active: boolean;
     export let title: string;
     export let hotkey: string;
     export let disabled: boolean;
+    export let popupOpen;
+    export let popupPosition: string;
 
     const dispatch = createEventDispatcher();
 </script>
 
 <style lang="sass">
     @import "./src/style/theme"
+
+    .ui-button
+        position: relative
 
     button
         border: none
@@ -46,17 +54,29 @@
         color: $black
 </style>
 
-<button
-        class:active={active}
-        title={title}
-        hotkey={hotkey}
-        use:hotkeyAction
-        use:tooltip
-        disabled={disabled}
-        on:click={() => {dispatch("click")}}
->
-    <slot/>
-    <span class="lock event-none" class:hidden={!disabled}>
-        <i class="fas fa-lock"></i>
-    </span>
-</button>
+<div class="ui-button">
+    <button
+            class:active={active}
+            title={title}
+            hotkey={hotkey}
+            use:hotkeyAction
+            use:tooltip
+            disabled={disabled}
+            on:click={() => {dispatch("click")}}
+    >
+        <slot/>
+        <span class="lock event-none" class:hidden={!disabled}>
+            <i class="fas fa-lock"></i>
+        </span>
+    </button>
+
+    {#if $$slots.popup && popupOpen}
+        <div transition:fade="{{duration: 50 }}"
+             use:clickOutside={() => {popupOpen = false}}>
+            <Popup position={popupPosition}>
+                <slot name="popup"/>
+            </Popup>
+        </div>
+    {/if}
+</div>
+

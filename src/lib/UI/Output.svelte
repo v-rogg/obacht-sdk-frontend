@@ -2,10 +2,12 @@
     import UIButton from "$lib/UI/UIButton.svelte";
     import { hotkeysStore, recordingStore } from "$lib/../store";
     import { onDestroy } from "svelte";
+    import Checkbox from "../Primitives/Checkbox.svelte";
 
     let hotkeys = {};
     let paused: boolean = false;
     let recording: boolean = false;
+    let outputOptionsOpen: boolean = false;
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
         hotkeys = val;
@@ -18,7 +20,7 @@
     onDestroy(() => {
         unsubHotkeyStore();
         unsubRecordingStore();
-    })
+    });
 </script>
 
 <style lang="sass">
@@ -26,15 +28,45 @@
     @import "./src/style/ui-grid"
 
     section
-        //position: fixed
-        //display: flex
-        //gap: 1.5rem
         left: 50%
         bottom: 2rem
         transform: translateX(-50%)
 
     .red
         color: $red
+
+    .output-options
+
+        &__popup
+            padding: 0
+            margin: 0
+            display: grid
+            grid-template-columns: auto auto
+            gap: .5rem .75rem
+            align-items: center
+
+            input[type=checkbox]
+                border-radius: $border-radius
+                border: none
+                background: $red
+
+            input[type=text]
+                border-radius: $border-radius
+                border: none
+                background: $white
+                width: 250px
+                padding: 0 .5rem
+                font-family: "Obacht! Plex Sans", sans-serif
+                font-size: .85rem
+                color: $black
+
+                &:disabled
+                    background: $light-grey
+                    background: $normal-grey
+                    //color: $black
+
+                &:focus
+                    outline: none
 </style>
 
 <section class="outputs">
@@ -69,8 +101,18 @@
         title="Output options"
         hotkey={hotkeys.toolOutput}
         disabled={recording}
-        on:click={() => {console.log('output options')}}
+        bind:popupOpen={outputOptionsOpen}
+        popupPosition="mid bottom"
+        on:click={() => {outputOptionsOpen = !outputOptionsOpen}}
     >
         <i class="fas fa-right event-none"></i>
+        <svelte:fragment slot="popup">
+            <div class="output-options__popup">
+                <Checkbox label="MQTT"/>
+                <input type="text" disabled value="192.168.178.48   topic: output">
+                <Checkbox label="JSON"/>
+                <input type="text">
+            </div>
+        </svelte:fragment>
     </UIButton>
 </section>

@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { toolStore } from "../store";
+    import { toolStore } from "$lib/../store";
+    import { fade } from "svelte/transition";
 
     export let title;
     export let x;
@@ -8,7 +9,7 @@
 
     let innerWidth = 0;
 
-    $: right = (x < innerWidth/2);
+    $: right = (x < innerWidth - innerWidth/3);
 
     let tool: string = "";
 
@@ -61,8 +62,9 @@
     {#if right}
         <div style="
                 top: {(y/16) + .5}rem;
-                left: {(x/16) + .25}rem;
-            ">
+                left: {(x/16) + .25}rem;"
+            transition:fade={{delay: 1000, duration: 0}}
+            >
             <i class="far fa-info-circle margin-right"></i>
             <span class="margin-right">
                 {title}
@@ -80,8 +82,8 @@
     {:else}
         <div style="
                 top: {(y/16) + .5}rem;
-                right: {(innerWidth/16) - (x/16) - .25}rem;
-            ">
+                right: {(innerWidth/16) - (x/16) - .25}rem;"
+            transition:fade={{delay: 1000, duration: 0}}>
             {#if key}
                 <span class="hotkey--outer">
                     <span class="hotkey--inner">

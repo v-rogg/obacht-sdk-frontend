@@ -14,7 +14,6 @@
     let open = true;
     let model: number = 97;
     let innerWidth = 0;
-    let forced = false
 
     const openWidth = 525
     const closedWidth = 212
@@ -126,7 +125,6 @@
 <svelte:window bind:innerWidth={innerWidth}/>
 
 <div class="box" class:open={open} style="width: {$width}px">
-<!--    <div class="header"><div><i class="fas fa-sensor-on margin-right"></i>   Connected Sensors</div><div class="close"><i class="far fa-angle-left"></i></div></div>-->
     <div class="header">
         <div class="header__text"><i class="fas fa-sensor-on margin-right"></i>   Connected Sensors</div>
         <div class="close" on:click={switchOpen}><span class:rotate180={open}><i class="fal fa-angle-right"></i></span></div>
@@ -134,7 +132,7 @@
     <div class="sensor"><span title="Sensor IP" use:tooltip>192.168.178.110</span>
         {#if open}
             <span transition:fly={{duration: 150, x: -10, delay: open? 100 : 0}} class="wrap">
-                <span class="sensor__model" title="Sensor Model: {model}" use:tooltip>RPLidar S1</span>   <HzDisplay model={model}/> <PingDisplay/>  <span class="battery" title="Battery estimate" use:tooltip><i class="far fa-battery-half margin-right"></i> 69%</span>
+                <span class="sensor__model" title="Sensor Model: {model}" use:tooltip>RPLidar S1</span>   <HzDisplay model={model}/> <PingDisplay/>  <span class="battery" title="Battery estimate" use:tooltip><i class="far fa-battery-half margin-right event-none"></i> 69%</span>
             </span>
         {/if}
     </div>
