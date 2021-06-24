@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
 
-    export let position: string = "mid bottom";
+    export let position: string = "mid top";
     export let gridColumnnsCount = 2;
 </script>
 
@@ -21,7 +21,7 @@
         .arrow
             left: 50%
             transform: translateX(-50%) rotateZ(45deg)
-        &.bottom
+        &.top
             bottom: calc(100% + 1.5rem)
             .arrow
                 border-radius: 0 0 $border-radius 0
@@ -32,7 +32,7 @@
         .arrow
             right: 1.25rem
             transform: rotateZ(45deg)
-        &.bottom
+        &.top
             bottom: calc(100% + 1.5rem)
             .arrow
                 border-radius: 0 0 $border-radius 0
@@ -43,7 +43,7 @@
         .arrow
             left: 1.25rem
             transform: rotateZ(45deg)
-        &.bottom
+        &.top
             bottom: calc(100% + 1.5rem)
             .arrow
                 border-radius: 0 0 $border-radius 0

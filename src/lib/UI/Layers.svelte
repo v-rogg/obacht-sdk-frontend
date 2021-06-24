@@ -4,6 +4,7 @@
     import { onDestroy } from 'svelte';
 
     let hotkeysProxy = '';
+    let mapPopupOpen = false;
     let layers: string[] = ["layerSensors", "layerRawData"];
 
     const unsubHotkeys = hotkeysStore.subscribe(val => {
@@ -72,8 +73,17 @@
             active={layers.indexOf("layerMap") !== -1}
             title="Map"
             hotkey={hotkeysProxy.layerMap}
-            on:click={() => switchLayer("layerMap")}
+            bind:popupOpen={mapPopupOpen}
+            popupPosition="right mid"
+            popupGridColumnsCount="1"
+            on:click={() => {
+                switchLayer("layerMap")
+                mapPopupOpen = !mapPopupOpen
+            }}
     >
         <i class="fas fa-map event-none"></i>
+        <svelte:fragment slot="popup">
+            Here will be the global settings like configs
+        </svelte:fragment>
     </UIButton>
 </section>

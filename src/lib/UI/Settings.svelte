@@ -37,7 +37,7 @@
         title="Settings"
         hotkey={hotkeys.toolSettings}
         bind:popupOpen={settingsPopupOpen}
-        popupPosition="left bottom"
+        popupPosition="left top"
         popupGridColumnsCount="1"
         on:click={() => {settingsPopupOpen = !settingsPopupOpen}}
     >

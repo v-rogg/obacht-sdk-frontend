@@ -76,7 +76,7 @@
         hotkey={hotkeys.toolOutput}
         disabled={recording}
         bind:popupOpen={outputOptionsOpen}
-        popupPosition="mid bottom"
+        popupPosition="mid top"
         popupGridColumnsCount="2"
         on:click={() => {outputOptionsOpen = !outputOptionsOpen}}
     >
