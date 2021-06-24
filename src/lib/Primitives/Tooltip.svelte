@@ -1,6 +1,5 @@
 <script lang="ts">
     import { toolStore } from "$lib/../store";
-    import { fade } from "svelte/transition";
 
     export let title;
     export let x;
@@ -21,7 +20,7 @@
 <style lang="sass">
     @import "src/style/theme"
 
-    div
+    .tooltip
         background: $normal-grey
         border-radius: $border-radius
         padding: .5rem .75rem
@@ -29,6 +28,12 @@
         pointer-events: none
         font-size: .85rem
         overflow: hidden
+        animation: show 0s 1s forwards
+        opacity: 0
+
+    @keyframes show
+        to
+            opacity: 1
 
     .margin-right
         margin-right: .5rem
@@ -58,45 +63,44 @@
 <svelte:window bind:innerWidth={innerWidth}/>
 
 
-{#if tool === "hand"}
-    {#if right}
-        <div style="
-                top: {(y/16) + .5}rem;
-                left: {(x/16) + .25}rem;"
-            transition:fade={{delay: 1000, duration: 0}}
-            >
-            <i class="far fa-info-circle margin-right"></i>
-            <span class="margin-right">
-                {title}
-            </span>
-            {#if key}
-                <span class="hotkey--outer">
-                    <span class="hotkey--inner">
-                        <span class="hotkey">
-                            {key.toUpperCase()}
-                        </span>
+{#if right}
+    <div style="
+            top: {(y/16) + .5}rem;
+            left: {(x/16) + .25}rem;"
+         class="tooltip"
+        >
+        <i class="far fa-info-circle margin-right"></i>
+        <span class="margin-right">
+            {title}
+        </span>
+        {#if key}
+            <span class="hotkey--outer">
+                <span class="hotkey--inner">
+                    <span class="hotkey">
+                        {key.toUpperCase()}
                     </span>
                 </span>
-            {/if}
-        </div>
-    {:else}
-        <div style="
-                top: {(y/16) + .5}rem;
-                right: {(innerWidth/16) - (x/16) - .25}rem;"
-            transition:fade={{delay: 1000, duration: 0}}>
-            {#if key}
-                <span class="hotkey--outer">
-                    <span class="hotkey--inner">
-                        <span class="hotkey">
-                            {key.toUpperCase()}
-                        </span>
+            </span>
+        {/if}
+    </div>
+{:else}
+    <div style="
+            top: {(y/16) + .5}rem;
+            right: {(innerWidth/16) - (x/16) - .25}rem;"
+         class="tooltip"
+        >
+        {#if key}
+            <span class="hotkey--outer">
+                <span class="hotkey--inner">
+                    <span class="hotkey">
+                        {key.toUpperCase()}
                     </span>
                 </span>
-            {/if}
-            <span class="margin-left">
-                {title}
             </span>
-            <i class="far fa-info-circle margin-left"></i>
-        </div>
-    {/if}
+        {/if}
+        <span class="margin-left">
+            {title}
+        </span>
+        <i class="far fa-info-circle margin-left"></i>
+    </div>
 {/if}
