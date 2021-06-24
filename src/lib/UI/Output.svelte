@@ -77,6 +77,7 @@
         disabled={recording}
         bind:popupOpen={outputOptionsOpen}
         popupPosition="mid bottom"
+        popupGridColumnsCount="2"
         on:click={() => {outputOptionsOpen = !outputOptionsOpen}}
     >
         <i class="fas fa-right event-none"></i>

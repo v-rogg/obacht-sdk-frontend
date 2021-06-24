@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { toolStore } from "$lib/../store";
+    import { toolStore, showTooltipStore } from "$lib/../store";
+    import { onDestroy } from "svelte";
 
     export let title;
     export let x;
@@ -7,13 +8,23 @@
     export let key;
 
     let innerWidth = 0;
+    let tool: string = "";
+    let showTooltip;
 
     $: right = (x < innerWidth - innerWidth/3);
 
-    let tool: string = "";
 
-    toolStore.subscribe(val => {
+    const unsubToolStore = toolStore.subscribe(val => {
         tool = val;
+    });
+
+    const unsubShowTooltipStore = showTooltipStore.subscribe(val => {
+        showTooltip = val;
+    });
+
+    onDestroy(() => {
+        unsubToolStore();
+        unsubShowTooltipStore();
     })
 </script>
 
@@ -63,44 +74,46 @@
 <svelte:window bind:innerWidth={innerWidth}/>
 
 
-{#if right}
-    <div style="
-            top: {(y/16) + .5}rem;
-            left: {(x/16) + .25}rem;"
-         class="tooltip"
-        >
-        <i class="far fa-info-circle margin-right"></i>
-        <span class="margin-right">
-            {title}
-        </span>
-        {#if key}
-            <span class="hotkey--outer">
-                <span class="hotkey--inner">
-                    <span class="hotkey">
-                        {key.toUpperCase()}
+{#if showTooltip}
+    {#if right}
+        <div style="
+                top: {(y/16) + .5}rem;
+                left: {(x/16) + .25}rem;"
+             class="tooltip"
+            >
+            <i class="far fa-info-circle margin-right"></i>
+            <span class="margin-right">
+                {title}
+            </span>
+            {#if key}
+                <span class="hotkey--outer">
+                    <span class="hotkey--inner">
+                        <span class="hotkey">
+                            {key.toUpperCase()}
+                        </span>
                     </span>
                 </span>
-            </span>
-        {/if}
-    </div>
-{:else}
-    <div style="
-            top: {(y/16) + .5}rem;
-            right: {(innerWidth/16) - (x/16) - .25}rem;"
-         class="tooltip"
-        >
-        {#if key}
-            <span class="hotkey--outer">
-                <span class="hotkey--inner">
-                    <span class="hotkey">
-                        {key.toUpperCase()}
+            {/if}
+        </div>
+    {:else}
+        <div style="
+                top: {(y/16) + .5}rem;
+                right: {(innerWidth/16) - (x/16) - .25}rem;"
+             class="tooltip"
+            >
+            {#if key}
+                <span class="hotkey--outer">
+                    <span class="hotkey--inner">
+                        <span class="hotkey">
+                            {key.toUpperCase()}
+                        </span>
                     </span>
                 </span>
+            {/if}
+            <span class="margin-left">
+                {title}
             </span>
-        {/if}
-        <span class="margin-left">
-            {title}
-        </span>
-        <i class="far fa-info-circle margin-left"></i>
-    </div>
+            <i class="far fa-info-circle margin-left"></i>
+        </div>
+    {/if}
 {/if}

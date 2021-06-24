@@ -12,6 +12,7 @@
     export let disabled: boolean;
     export let popupOpen;
     export let popupPosition: string;
+    export let popupGridColumnsCount;
 
     const dispatch = createEventDispatcher();
 </script>
@@ -73,7 +74,7 @@
     {#if $$slots.popup && popupOpen}
         <div transition:fade="{{duration: 50 }}"
              use:clickOutside={() => {popupOpen = false}}>
-            <Popup position={popupPosition}>
+            <Popup position={popupPosition} gridColumnnsCount={popupGridColumnsCount}>
                 <slot name="popup"/>
             </Popup>
         </div>
