@@ -14,6 +14,12 @@
         .inner
             z-index: 1080
             position: relative
+            padding: 0
+            margin: 0
+            display: grid
+            grid-template-columns: auto auto
+            gap: .5rem .75rem
+            align-items: center
 
         .arrow
             position: absolute
