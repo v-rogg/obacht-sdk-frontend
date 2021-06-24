@@ -81,9 +81,15 @@
     >
         <i class="fas fa-right event-none"></i>
         <svelte:fragment slot="popup">
-                <Checkbox label="MQTT"/>
+                <Checkbox label="MQTT" value={outputSettings.MQTT.enabled} on:change={(change) => {
+                    outputSettings.MQTT.enabled = change.detail;
+                    outputSettingsStore.set(outputSettings);
+                }}/>
                 <Input type="text" disabled value="192.168.178.48   topic: output" />
-                <Checkbox label="JSON"/>
+                <Checkbox label="JSON" value={outputSettings.JSON.enabled} on:change={(change) => {
+                    outputSettings.JSON.enabled = change.detail;
+                    outputSettingsStore.set(outputSettings);
+                }}/>
                 <Input value={outputSettings.JSON.location} on:change={(change) => {
                     outputSettings.JSON.location = change.detail;
                     outputSettingsStore.set(outputSettings);
