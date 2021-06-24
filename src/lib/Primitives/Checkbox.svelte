@@ -1,8 +1,10 @@
 <script lang="ts">
+    import { createEventDispatcher } from "svelte";
+
     export let value;
     export let label;
 
-    export let hidden;
+    const dispatch = createEventDispatcher();
 </script>
 
 <style lang="sass">
@@ -43,7 +45,7 @@
 </style>
 
 <label>
-    <input type="checkbox" bind:checked={value}>
+    <input type="checkbox" bind:checked={value} on:change={() => dispatch('change', value)}>
     <span class=checkbox>
         <span class:hidden={!value}>
             <i class="fas fa-check checkmark"></i>
