@@ -2,19 +2,26 @@
     import { socketStore } from "$lib/../store";
     import { tooltip } from "$lib/actions/tooltip";
 
+    export let address: string;
+
     let ms: string = "---";
 
-    socketStore.subscribe(value => {
-        if (value[0] === "@") {
-            const time = value.split(";")[1];
-            const date = new Date(time);
-            const now = new Date();
-            // const offset = -700;
-            ms = (now - date).toFixed(0);
-            // ms = round(msDiff, 1).toFixed(1);
-            // console.log(now, date);
+    socketStore.subscribe(message => {
+        const splitMessage = message.split(";");
+        const msgAddress = splitMessage[0].slice(1);
 
-            // console.log("now", now.getMilliseconds(), "sensor", date.getMilliseconds());
+        if (msgAddress == address) {
+            if (splitMessage[1][0] === "@") {
+                const time = splitMessage[2];
+                const date = new Date(time);
+                const now = new Date();
+                // const offset = -700;
+                ms = (now - date).toFixed(0);
+                // ms = round(msDiff, 1).toFixed(1);
+                // console.log(now, date);
+
+                // console.log("now", now.getMilliseconds(), "sensor", date.getMilliseconds());
+            }
         }
     })
 </script>

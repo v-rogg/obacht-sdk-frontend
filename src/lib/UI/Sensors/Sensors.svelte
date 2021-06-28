@@ -6,14 +6,37 @@
     import HzDisplay from "$lib/UI/Sensors/HzDisplay.svelte";
     import PingDisplay from "$lib/UI/Sensors/PingDisplay.svelte";
     import { tooltip } from "$lib/actions/tooltip";
-
     import { fly } from "svelte/transition";
     import { tweened } from "svelte/motion";
     import { linear } from "svelte/easing";
+    import { sensorStore, socketStore } from "$lib/../store";
+    import { onDestroy } from "svelte";
 
     let open = true;
-    let model: number = 97;
     let innerWidth = 0;
+
+    // let sensors: {hostname, address, model}[] = [{
+    //     hostname: "localhost",
+    //     address: "localhost",
+    //     model: 97,
+    // }];
+
+    let sensors: {address, Hostname, Model}[] = [{
+            address: "localhost",
+            Hostname: "localhost",
+            Model: "97",
+        }]
+
+    let sensorModels = {
+        "97": "RPLiDAR S1",
+        "24": "RPLiDAR A1"
+    };
+
+
+    sensorStore.subscribe(val => {
+        sensors = val;
+        console.log(sensors);
+    })
 
     const openWidth = 525
     const closedWidth = 212
@@ -22,6 +45,26 @@
         duration: 125,
         easing: linear
     });
+
+    const unsubSocketStore = socketStore.subscribe(value => {
+        // let [type, hostname, address, model]
+        switch(value[0]) {
+            case "+":
+                const [type, hostname, c, model] = value.split(":");
+                sensors = [...sensors, {
+                    address: c,
+                    Hostname: hostname,
+                    Model: model,
+                }]
+                break;
+            case "-":
+                const [a, b, address] = value.split(":");
+                const resInd = sensors.findIndex(({address}) => sensors.address === address);
+                sensors.splice(resInd, 1);
+                sensors = sensors;
+                break;
+        }
+    })
 
     function switchOpen() {
         if (open) {
@@ -46,6 +89,9 @@
 
     $: forceClosed = getForcedClosed(innerWidth);
 
+    onDestroy(() => {
+        unsubSocketStore();
+    })
 </script>
 
 <style lang="sass">
@@ -129,11 +175,14 @@
         <div class="header__text"><i class="fas fa-sensor-on margin-right"></i>   Connected Sensors</div>
         <div class="close" on:click={switchOpen}><span class:rotate180={open}><i class="fal fa-angle-right"></i></span></div>
     </div>
-    <div class="sensor"><span title="Sensor IP" use:tooltip>192.168.178.110</span>
-        {#if open}
-            <span transition:fly={{duration: 150, x: -10, delay: open? 100 : 0}} class="wrap">
-                <span class="sensor__model" title="Sensor Model: {model}" use:tooltip>RPLidar S1</span>   <HzDisplay model={model}/> <PingDisplay/>  <span class="battery" title="Battery estimate" use:tooltip><i class="far fa-battery-half margin-right event-none"></i> 69%</span>
-            </span>
-        {/if}
-    </div>
+    {#each sensors as sensor}
+        <div class="sensor"><span title="Sensor IP" use:tooltip>{sensor.address}</span>
+            {#if open}
+                <span transition:fly={{duration: 150, x: -10, delay: open? 100 : 0}} class="wrap">
+                    <span class="sensor__model" title="Sensor Model: {sensor.Model}" use:tooltip>{sensorModels[sensor.Model]}</span>   <HzDisplay model={sensor.Model} address={sensor.address}/> <PingDisplay address={sensor.address}/>  <span class="battery" title="Start sensor scan" use:tooltip><i class="fas fa-play event-none"></i></span>
+<!--                    <span class="sensor__model" title="Sensor Model: {sensor.model}" use:tooltip>RPLidar S1</span>   <HzDisplay model={parseInt(sensor.model)}/> <PingDisplay/>  <span class="battery" title="Battery estimate" use:tooltip><i class="far fa-battery-half margin-right event-none"></i> 69% <i class="fas fa-play"></i></span>-->
+                </span>
+            {/if}
+        </div>
+    {/each}
 </div>

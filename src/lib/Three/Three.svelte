@@ -14,12 +14,11 @@
         stats.showPanel(1);
         // document.body.appendChild(stats.dom);
 
-        socketStore.subscribe(value => {
-            if (value[0] === "@") {
-                // console.log(value);
-            } else if (value !== "") {
+        socketStore.subscribe(message => {
+            const splitMessage = message.split(";");
+            if (splitMessage[1][0] !== "@") {
                 points = [];
-                const measure = value.split("!");
+                const measure = message.split("!");
                 // stats.begin();
                 measure.forEach(m => {
                     const [angle, distance] = m.split(";");
@@ -31,7 +30,6 @@
                     // points.push({x: loc[0], y: loc[1]});
                     points.push({x: x, y: y});
                 })
-                // stats.end();
             }
         })
 

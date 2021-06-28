@@ -31,3 +31,19 @@ export const outputSettingsStore = writable({
         enabled: true,
     }
 });
+
+export const sensorStore = writable([], set => {
+    fetch("http://localhost:3000/init")
+        .then(res => res.json())
+        .then(json => {
+            let sensors = [];
+            // console.log(json);
+            Object.keys(json).forEach(key => {
+                sensors.push({
+                    address: key,
+                    ... json[key]
+                })
+            })
+            set(sensors)
+        })
+})
