@@ -45,7 +45,7 @@
             display: none
 </style>
 
-<section class="layers">
+<section class="tools">
     <UIButton
         active={tool === "hand"}
         title="Hand"

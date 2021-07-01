@@ -16,8 +16,7 @@
         width: max-content
 
     .mid
-        left: 50%
-        transform: translateX(-50%)
+
         .arrow
             left: 50%
             transform: translateX(-50%) rotateZ(45deg)

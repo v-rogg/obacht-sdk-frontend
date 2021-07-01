@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { hotkeysStore, layersStore } from '$lib/../store';
+    import { hotkeysStore, layersStore } from "$lib/../store";
     import UIButton from "$lib/UI/UIButton.svelte";
-    import { onDestroy } from 'svelte';
+    import { onDestroy } from "svelte";
+    import UIButtonGroup from "$lib/UI/UIButtonGroup.svelte";
 
-    let hotkeysProxy = '';
+    let hotkeysProxy = "";
     let mapPopupOpen = false;
     let layers: string[] = ["layerSensors", "layerRawData"];
 
@@ -13,7 +14,7 @@
 
     const unsubLayersStore = layersStore.subscribe(val => {
         layers = val;
-    })
+    });
 
     function switchLayer(layer: string) {
         if (layers.indexOf(layer) !== -1) {
@@ -25,9 +26,9 @@
     }
 
     onDestroy(() => {
-        unsubHotkeys()
-        unsubLayersStore()
-    })
+        unsubHotkeys();
+        unsubLayersStore();
+    });
 </script>
 
 <style lang="sass">
@@ -69,21 +70,26 @@
     >
         <i class="fas fa-person event-none"></i>
     </UIButton>
-    <UIButton
-            active={layers.indexOf("layerMap") !== -1}
-            title="Map"
-            hotkey={hotkeysProxy.layerMap}
-            bind:popupOpen={mapPopupOpen}
-            popupPosition="right mid"
-            popupGridColumnsCount="1"
-            on:click={() => {
-                switchLayer("layerMap")
-                mapPopupOpen = !mapPopupOpen
-            }}
+    <UIButtonGroup
+        active={layers.indexOf("layerMap") !== -1}
+        title="Map"
+        hotkey={hotkeysProxy.layerMap}
+        bind:popupOpen={mapPopupOpen}
+        popupPosition="right mid"
+        popupGridColumnsCount="1"
+        on:click={() => {
+            switchLayer("layerMap")
+            mapPopupOpen = !mapPopupOpen
+        }}
     >
-        <i class="fas fa-map event-none"></i>
-        <svelte:fragment slot="popup">
-            Here will be the global settings like configs
+        <svelte:fragment slot="button">
+            <i class="fas fa-map event-none"></i>
         </svelte:fragment>
-    </UIButton>
+        <UIButton>
+            <i class="fas fa-circle event-none"></i>
+        </UIButton>
+        <UIButton>
+            <i class="fas fa-rectangle event-none"></i>
+        </UIButton>
+    </UIButtonGroup>
 </section>

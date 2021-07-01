@@ -6,20 +6,14 @@
     import HzDisplay from "$lib/UI/Sensors/HzDisplay.svelte";
     import PingDisplay from "$lib/UI/Sensors/PingDisplay.svelte";
     import { tooltip } from "$lib/actions/tooltip";
+    import { sensorStore, socketStore } from "$lib/../store";
     import { fly } from "svelte/transition";
     import { tweened } from "svelte/motion";
     import { linear } from "svelte/easing";
-    import { sensorStore, socketStore } from "$lib/../store";
     import { onDestroy } from "svelte";
 
     let open = true;
     let innerWidth = 0;
-
-    // let sensors: {hostname, address, model}[] = [{
-    //     hostname: "localhost",
-    //     address: "localhost",
-    //     model: 97,
-    // }];
 
     let sensors: {address, Hostname, Model}[] = [{
             address: "localhost",
