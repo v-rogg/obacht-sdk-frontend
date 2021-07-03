@@ -33,7 +33,7 @@ export const wsConnectionStore = derived(wsStore, ($wsStore, set) => {
         });
         $wsStore.addEventListener("error", () => set(false));
     }
-}, false);
+}, null);
 
 export const messageStore = derived(wsStore, ($wsStore, set) => {
     $wsStore.addEventListener("message", (event) => set(event.data));
