@@ -25,7 +25,6 @@
     });
 
     const unsubWsConnectionStore = wsConnectionStore.subscribe(val => {
-        console.log(val);
         wsConnectionStatus = val
     });
 
@@ -59,9 +58,6 @@
             //margin-left: .5rem
             right: .5rem
             top: 1px
-
-    .green
-        color: $green
 
     .red
         color: $red

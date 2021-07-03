@@ -29,7 +29,6 @@
 
     sensorStore.subscribe(val => {
         sensors = val;
-        console.log(sensors);
     })
 
     const openWidth = 525
