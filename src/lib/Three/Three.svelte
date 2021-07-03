@@ -2,7 +2,7 @@
     import * as THREE from "three";
     import { onMount } from "svelte";
     import Stats from "stats.js";
-    import { socketStore, toolStore, layersStore } from "../../store";
+    import { toolStore, layersStore } from "../../store";
     import { browser } from "$app/env";
     import { OrbitControls } from "$lib/Three/OrbitControls";
     import { DragControls } from "$lib/Three/DragControls";

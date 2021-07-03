@@ -6,7 +6,7 @@
     import HzDisplay from "$lib/UI/Sensors/HzDisplay.svelte";
     import PingDisplay from "$lib/UI/Sensors/PingDisplay.svelte";
     import { tooltip } from "$lib/actions/tooltip";
-    import { sensorStore, socketStore } from "$lib/../store";
+    import { messageStore, sensorStore } from "$lib/../store";
     import { fly } from "svelte/transition";
     import { tweened } from "svelte/motion";
     import { linear } from "svelte/easing";
@@ -39,22 +39,24 @@
         easing: linear
     });
 
-    const unsubSocketStore = socketStore.subscribe(value => {
+    const messageSocketStore = messageStore.subscribe(message => {
         // let [type, hostname, address, model]
-        switch(value[0]) {
+        switch(message[0]) {
             case "+":
-                const [type, hostname, c, model] = value.split(":");
+                const [type, hostname, c, model] = message.split(":");
                 sensors = [...sensors, {
                     address: c,
                     Hostname: hostname,
                     Model: model,
                 }]
+                sensorStore.set(sensors);
                 break;
             case "-":
-                const [a, b, address] = value.split(":");
+                const [a, b, address] = message.split(":");
                 const resInd = sensors.findIndex(({address}) => sensors.address === address);
                 sensors.splice(resInd, 1);
                 sensors = sensors;
+                sensorStore.set(sensors);
                 break;
         }
     })
@@ -83,7 +85,7 @@
     $: forceClosed = getForcedClosed(innerWidth);
 
     onDestroy(() => {
-        unsubSocketStore();
+        messageSocketStore();
     })
 </script>
 

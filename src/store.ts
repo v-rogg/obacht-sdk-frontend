@@ -1,25 +1,15 @@
 import { derived, readable, writable } from "svelte/store";
 import {browser} from "$app/env";
 
-export const socketStore = readable("", set => {
+export const backendAddressStore = writable("localhost:3000");
+
+export const wsStore = derived(backendAddressStore, ($backendAddressStore, set) => {
     if (browser) {
-        const socket = new WebSocket("ws://192.168.178.48:3000/ws");
-
-        socket.addEventListener("open", () => console.log("socket opened"));
-        socket.addEventListener("message", (event) => set(event.data));
-        socket.addEventListener("close", () => console.log("socket closed"));
-
-        return () => socket.close();
-    }
-});
-
-export const wsStore = writable(<WebSocket>null, set => {
-    if (browser) {
-        const socket = new WebSocket("ws://localhost:3000/ws");
+        const socket = new WebSocket(`ws://${$backendAddressStore}/ws`);
         set(socket);
         return () => socket.close();
     }
-});
+}, <WebSocket>null)
 
 export const wsConnectionStore = derived(wsStore, ($wsStore, set) => {
     if ($wsStore) {
@@ -64,6 +54,7 @@ export const outputSettingsStore = writable({
     }
 });
 
+// TODO: Remove init and replace with server messages
 export const sensorStore = writable([], set => {
     fetch("http://localhost:3000/init")
         .then(res => res.json())

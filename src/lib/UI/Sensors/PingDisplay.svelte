@@ -1,12 +1,13 @@
 <script lang="ts">
-    import { socketStore } from "$lib/../store";
+    import { messageStore } from "$lib/../store";
     import { tooltip } from "$lib/actions/tooltip";
+    import { onDestroy } from "svelte";
 
     export let address: string;
 
     let ms: string = "---";
 
-    socketStore.subscribe(message => {
+    const unsubMessageStore = messageStore.subscribe(message => {
         const splitMessage = message.split(";");
         const msgAddress = splitMessage[0].slice(1);
 
@@ -23,6 +24,10 @@
                 // console.log("now", now.getMilliseconds(), "sensor", date.getMilliseconds());
             }
         }
+    });
+
+    onDestroy(() => {
+        unsubMessageStore();
     })
 </script>
 

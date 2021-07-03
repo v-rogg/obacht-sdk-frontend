@@ -1,6 +1,6 @@
 <script lang="ts">
     import UIButton from "./UIButton.svelte";
-    import { hotkeysStore, showTooltipStore, wsConnectionStore, wsStore } from "$lib/../store";
+    import { backendAddressStore, hotkeysStore, showTooltipStore, wsConnectionStore, wsStore } from "$lib/../store";
     import { onDestroy } from "svelte";
     import Checkbox from "$lib/Primitives/Checkbox.svelte";
     import Input from "../Primitives/Input.svelte";
@@ -11,27 +11,18 @@
     let showTooltip;
     let ws;
     let wsConnectionStatus;
+    let backendAddress;
 
-    const unsubHotkeyStore = hotkeysStore.subscribe(val => {
-        hotkeys = val;
-    });
-
-    const unsubShowTooltipStore = showTooltipStore.subscribe(val => {
-        showTooltip = val;
-    });
-
-    const unsubWsStore = wsStore.subscribe(val => {
-        if (val) ws = val;
-    });
-
-    const unsubWsConnectionStore = wsConnectionStore.subscribe(val => {
-        wsConnectionStatus = val
-    });
+    const unsubHotkeyStore = hotkeysStore.subscribe(val => hotkeys = val);
+    const unsubShowTooltipStore = showTooltipStore.subscribe(val => showTooltip = val);
+    const unsubWsStore = wsStore.subscribe(val => {if (val) ws = val});
+    const unsubWsConnectionStore = wsConnectionStore.subscribe(val => wsConnectionStatus = val);
+    const unsubBackendAddressStore = backendAddressStore.subscribe(val => backendAddress = val);
 
     function updateWsStore(url) {
         if (url) {
             ws.close();
-            wsStore.set(new WebSocket(url));
+            backendAddressStore.set(url);
         }
     }
 
@@ -40,6 +31,7 @@
         unsubShowTooltipStore();
         unsubWsStore();
         unsubWsConnectionStore();
+        unsubBackendAddressStore();
     });
 </script>
 
@@ -78,7 +70,7 @@
         <svelte:fragment slot="popup">
 <!--            Here will be the global settings like configs<br/>-->
             <div class="ws">
-                <Input value={ws.url} on:change={change => {updateWsStore(change.detail)}}/>
+                <Input value={backendAddress} on:change={change => {updateWsStore(change.detail)}}/>
                 <span class:hidden={!wsConnectionStatus} ><i class="fas fa-check"></i></span>
                 <span class:hidden={wsConnectionStatus} class="red"><i class="fas fa-triangle-exclamation"></i></span>
             </div>

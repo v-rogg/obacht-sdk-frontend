@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { socketStore } from "$lib/../store";
+    import { messageStore } from "$lib/../store";
     import { tooltip } from "$lib/actions/tooltip";
+    import { onDestroy } from "svelte";
 
     export let model: string;
     export let address: string;
@@ -16,7 +17,7 @@
         return Math.round(value * multiplier) / multiplier;
     }
 
-    socketStore.subscribe(message => {
+    const unsubMessageStore = messageStore.subscribe(message => {
         const splitMessage = message.split(";");
         const msgAddress = splitMessage[0].slice(1);
 
@@ -63,6 +64,10 @@
                 }
             }
         }
+    });
+
+    onDestroy(() => {
+        unsubMessageStore();
     })
 </script>
 
