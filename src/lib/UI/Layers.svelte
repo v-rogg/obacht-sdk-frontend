@@ -70,6 +70,14 @@
     >
         <i class="fas fa-person event-none"></i>
     </UIButton>
+    <UIButton
+        active={layers.indexOf("layerGrid") !== -1}
+        title="Persons"
+        hotkey={hotkeysProxy.layerGrid}
+        on:click={() => switchLayer("layerGrid")}
+    >
+        <i class="fas fa-border-all event-none"></i>
+    </UIButton>
     <UIButtonGroup
         active={layers.indexOf("layerMap") !== -1}
         title="Map"

@@ -1,4 +1,4 @@
-import {readable, writable} from "svelte/store";
+import { derived, readable, writable } from "svelte/store";
 import {browser} from "$app/env";
 
 export const socketStore = readable("", set => {
@@ -11,6 +11,32 @@ export const socketStore = readable("", set => {
 
         return () => socket.close();
     }
+});
+
+export const wsStore = writable(<WebSocket>null, set => {
+    if (browser) {
+        const socket = new WebSocket("ws://localhost:3000/ws");
+        set(socket);
+        return () => socket.close();
+    }
+});
+
+export const wsConnectionStore = derived(wsStore, ($wsStore, set) => {
+    if ($wsStore) {
+        $wsStore.addEventListener("open", () => {
+            console.log("open")
+            set(true)
+        });
+        $wsStore.addEventListener("close", () => {
+            console.log("close")
+            set(false)
+        });
+        $wsStore.addEventListener("error", () => set(false));
+    }
+});
+
+export const messageStore = derived(wsStore, ($wsStore, set) => {
+    $wsStore.addEventListener("message", (event) => set(event.data));
 });
 
 export const hotkeysStore = writable("");
@@ -52,4 +78,4 @@ export const sensorStore = writable([], set => {
             })
             set(sensors)
         })
-})
+});

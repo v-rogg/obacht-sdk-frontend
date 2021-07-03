@@ -5,6 +5,7 @@ export async function get() {
             layerRawData: "R",
             layerPersons: "P",
             layerMap: "M",
+            layerGrid: "G",
             toolHand: "H",
             toolZones: "Z",
             toolSensorLocations: "L",
