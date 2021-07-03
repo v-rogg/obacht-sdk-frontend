@@ -10,6 +10,7 @@
     export let title: string;
     export let hotkey: string;
     export let disabled: boolean;
+    export let danger: boolean;
     export let popupOpen;
     export let popupPosition: string;
     export let popupGridColumnsCount;
@@ -47,12 +48,17 @@
         background: $light-grey
         color: $black
 
-    .lock
+    .lock, .danger
         position: absolute
         bottom: 6px
         right: 6px
         font-size: .85rem
+
+    .lock
         color: $black
+
+    .danger
+        color: $red
 </style>
 
 <div class="ui-button">
@@ -68,6 +74,10 @@
         <slot/>
         <span class="lock event-none" class:hidden={!disabled}>
             <i class="fas fa-lock"></i>
+        </span>
+
+        <span class="danger event-none" class:hidden={!danger}>
+            <i class="fas fa-triangle-exclamation"></i>
         </span>
     </button>
 
