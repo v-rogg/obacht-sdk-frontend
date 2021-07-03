@@ -15,6 +15,12 @@ export const socketStore = readable("", set => {
 
 export const hotkeysStore = writable("");
 
+export const mobileCheckStore = readable(false, set => {
+    if (browser) {
+        set(window.matchMedia("only screen and (max-width: 760px)").matches)
+    }
+});
+
 export const showTooltipStore = writable(true);
 
 export const layersStore = writable(["layerSensors", "layerRawData"]);

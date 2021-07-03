@@ -1,6 +1,9 @@
 <script lang="ts">
-    import { toolStore, showTooltipStore } from "$lib/../store";
+    import { toolStore, showTooltipStore, mobileCheckStore } from "$lib/../store";
     import { onDestroy } from "svelte";
+    import { get } from "svelte/store";
+
+    const isMobile = get(mobileCheckStore);
 
     export let title;
     export let x;
@@ -74,7 +77,7 @@
 <svelte:window bind:innerWidth={innerWidth}/>
 
 
-{#if showTooltip}
+{#if showTooltip && !isMobile}
     {#if right}
         <div style="
                 top: {(y/16) + .5}rem;
