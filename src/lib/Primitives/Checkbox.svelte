@@ -17,6 +17,7 @@
         user-select: none
         justify-content: flex-start
         align-items: center
+        width: max-content
 
     input
         position: relative
