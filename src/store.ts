@@ -33,11 +33,11 @@ export const wsConnectionStore = derived(wsStore, ($wsStore, set) => {
         });
         $wsStore.addEventListener("error", () => set(false));
     }
-});
+}, false);
 
 export const messageStore = derived(wsStore, ($wsStore, set) => {
     $wsStore.addEventListener("message", (event) => set(event.data));
-});
+}, "");
 
 export const hotkeysStore = writable("");
 
