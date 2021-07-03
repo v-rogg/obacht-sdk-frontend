@@ -7,12 +7,17 @@
     import { OrbitControls } from "$lib/Three/OrbitControls";
     import { DragControls } from "$lib/Three/DragControls";
     import { TransformControls } from "./TransformControls";
+    import LoadJumper from "$lib/UI/LoadJumper.svelte";
 
     let points = [];
     let currentIntersect = null;
     let layersProxy = {};
 
-    layersStore.subscribe(val => {layersProxy = val});
+    let show = true;
+
+    layersStore.subscribe(val => {
+        layersProxy = val;
+    });
 
     if (browser) {
         onMount(async () => {
@@ -51,14 +56,14 @@
             // scene.background = new THREE.Color("white");
 
             let geometry = new THREE.BoxGeometry();
-            const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-            const cube = new THREE.Mesh( geometry, material );
-            scene.add( cube );
+            const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const cube = new THREE.Mesh(geometry, material);
+            scene.add(cube);
 
             const tmaterial = new THREE.PointsMaterial({
                 color: 0x18A0FB,
                 size: 3,
-                opacity: 1
+                opacity: 1,
             });
             const tgeometry = new THREE.BufferGeometry();
             const pointCloud = new THREE.Points(tgeometry, tmaterial);
@@ -71,7 +76,7 @@
             window.addEventListener("resize", () => {
                 sizes = {
                     width: window.innerWidth,
-                    height: window.innerHeight
+                    height: window.innerHeight,
                 };
 
                 camera.left = -5 * (sizes.width / sizes.height);
@@ -87,14 +92,14 @@
 
             const mouseScene = new THREE.Vector2();
             const mouseWindow = new THREE.Vector2();
-            window.addEventListener('mousemove', (event) => {
+            window.addEventListener("mousemove", (event) => {
                 mouseScene.x = event.clientX / sizes.width * 2 - 1;
-                mouseScene.y = - (event.clientY / sizes.height) * 2 + 1;
+                mouseScene.y = -(event.clientY / sizes.height) * 2 + 1;
                 mouseWindow.x = event.clientX;
                 mouseWindow.y = event.clientY;
             });
 
-            canvas.addEventListener('click', () => {
+            canvas.addEventListener("click", () => {
                 if (currentIntersect) {
                     console.log(`clicked on`, currentIntersect);
                 }
@@ -113,12 +118,12 @@
 
             geometry = new THREE.BoxGeometry(1, 1, 1);
 
-            for ( let i = 0; i < 200; i ++ ) {
+            for (let i = 0; i < 200; i++) {
 
-                const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+                const object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0x4E5256 }));
 
                 object.position.x = Math.random() * 100 - 50;
-                object.position.y = Math.random() * 30 ;
+                object.position.y = Math.random() * 30;
                 object.position.z = Math.random() * 80 - 40;
 
                 object.rotation.x = Math.random() * 2 * Math.PI;
@@ -132,12 +137,12 @@
                 object.castShadow = true;
                 object.receiveShadow = true;
 
-                scene.add( object );
+                scene.add(object);
 
-                objects.push( object );
+                objects.push(object);
             }
 
-            let controls = new OrbitControls(camera, renderer.domElement)
+            let controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
             controls.screenSpacePanning = false;
@@ -176,14 +181,14 @@
             let gridBig = new THREE.GridHelper(1000, 100);
             scene.add(gridBig);
 
-            const raycaster = new THREE.Raycaster()
+            const raycaster = new THREE.Raycaster();
 
             function tick() {
 
                 // stats.begin();
 
                 // Cast a ray
-                raycaster.setFromCamera(mouseScene, camera)
+                raycaster.setFromCamera(mouseScene, camera);
 
                 let intersects = raycaster.intersectObjects([...objects]);
                 // let intersects = raycaster.intersectObject(cube);
@@ -200,8 +205,8 @@
                     currentIntersect = null;
                 }
 
-                const factor = ( camera.top - camera.bottom ) / camera.zoom
-                cube.scale.set(1, 1, 1).multiplyScalar( factor / 10 );
+                const factor = (camera.top - camera.bottom) / camera.zoom;
+                cube.scale.set(1, 1, 1).multiplyScalar(factor / 10);
 
                 if (layersProxy.includes("layerGrid")) {
                     if (camera.zoom <= .5) {
@@ -222,9 +227,9 @@
                         point.x / 1000,
                         0,
                         point.y / 1000,
-                    )
+                    );
                 }
-                tgeometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3))
+                tgeometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
 
                 controls.update();
                 // controls.update(clock.getDelta());
@@ -233,8 +238,11 @@
                 // stats.end();
                 window.requestAnimationFrame(tick);
             }
+
             render();
             tick();
+
+            show = false;
 
             function render() {
                 renderer.render(scene, camera);
@@ -249,7 +257,7 @@
         top: 0
         left: 0
         outline: none
-        //z-index: 0
 </style>
 
 <canvas id="three"></canvas>
+<LoadJumper show={show}/>
