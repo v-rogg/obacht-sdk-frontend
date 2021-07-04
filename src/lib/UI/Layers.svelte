@@ -77,57 +77,35 @@
     >
         <i class="fas fa-border-all event-none"></i>
     </UIButton>
-    <UIButton
-        active={layers.indexOf("layerMap") !== -1}
-        title="Map"
-        hotkey={hotkeysProxy.layerMap}
-        bind:groupOpen={mapGroupOpen}
-        groupPosition="right-center"
-        on:click={() => {
-            switchLayer("layerMap")
-            mapGroupOpen = !mapGroupOpen
-        }}
-    >
-        <i class="fas fa-map event-none"></i>
-        <svelte:fragment slot="group">
-            <UIButton
-                active={layers.indexOf("layerMap") !== -1}
-                title="Map"
-                hotkey={hotkeysProxy.layerMap}
-                bind:groupOpen={mapGroupOpen}
-                groupPosition="right-center"
-                on:click={() => {
-                switchLayer("layerMap")
-                mapGroupOpen = !mapGroupOpen
-            }}
-            >
-                <i class="fas fa-broom event-none"></i>
-                <svelte:fragment slot="group">
-                    <UIButton
-                        active={true}
-                    >
-                        <i class="fas fa-tornado event-none"></i>
-                        <svelte:fragment slot="addon">
-                            <i class="fas fa-plus event-none"></i>
-                        </svelte:fragment>
-                    </UIButton>
-                    <UIButton
-                        active={true}
-                    >
-                        <i class="fas fa-car event-none"></i>
-                    </UIButton>
-                    <UIButton
-                        active={true}
-                    >
-                        <i class="fas fa-tomato event-none"></i>
-                    </UIButton>
-                </svelte:fragment>
-            </UIButton>
-            <UIButton
-                active={true}
-            >
-                <i class="fas fa-paper-plane event-none"></i>
-            </UIButton>
-        </svelte:fragment>
-    </UIButton>
+<!--    <UIButton-->
+<!--        active={layers.indexOf("layerMap") !== -1}-->
+<!--        title="Map"-->
+<!--        hotkey={hotkeysProxy.layerMap}-->
+<!--        bind:groupOpen={mapGroupOpen}-->
+<!--        groupPosition="right-center"-->
+<!--        on:click={() => {-->
+<!--            switchLayer("layerMap")-->
+<!--            mapGroupOpen = !mapGroupOpen-->
+<!--        }}-->
+<!--    >-->
+<!--        <i class="fas fa-map event-none"></i>-->
+<!--        <svelte:fragment slot="group">-->
+<!--            <UIButton-->
+<!--                active={true}-->
+<!--            >-->
+<!--                <i class="fas fa-map event-none"></i>-->
+<!--                <svelte:fragment slot="addon">-->
+<!--                    <i class="fas fa-arrows-up-down-left-right event-none"></i>-->
+<!--                </svelte:fragment>-->
+<!--            </UIButton>-->
+<!--            <UIButton-->
+<!--                active={true}-->
+<!--            >-->
+<!--                <i class="fas fa-map event-none"></i>-->
+<!--                <svelte:fragment slot="addon">-->
+<!--                    <i class="fas fa-plus event-none"></i>-->
+<!--                </svelte:fragment>-->
+<!--            </UIButton>-->
+<!--        </svelte:fragment>-->
+<!--    </UIButton>-->
 </section>

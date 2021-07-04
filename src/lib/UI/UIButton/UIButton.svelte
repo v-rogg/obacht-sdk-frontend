@@ -70,14 +70,16 @@
         position: absolute
         font-size: .85rem
         bottom: 0
-        > *
-            transform: rotateZ(45deg)
 
     .right, .top, .bottom
         right: .25rem
+        > *
+            transform: rotateZ(45deg)
 
     .left
         left: .25rem
+        > *
+            transform: rotateZ(135deg)
 
     .addon
         position: absolute
@@ -97,7 +99,7 @@
             on:click={() => {dispatch("click")}}
     >
         <slot/>
-        <span class="addon">
+        <span class="addon event-none">
             <slot name="addon"/>
         </span>
 

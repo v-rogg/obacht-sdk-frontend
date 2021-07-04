@@ -7,6 +7,8 @@
     let tool: string = "hand";
     let recording: boolean = false;
 
+    let zonesTool: string = "zonesMove";
+
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
         hotkeys = val;
     });
@@ -55,13 +57,75 @@
         <i class="fas fa-hand event-none"></i>
     </UIButton>
     <UIButton
-        active={tool === "zones"}
+        active={tool === "zonesMove"  ||
+                tool === "zonesPlus"  ||
+                tool === "zonesMinus" ||
+                tool === "zonesRemove"}
         title="Zones"
         hotkey={hotkeys.toolZones}
         disabled={recording}
-        on:click={() => selectTool("zones")}
+        groupPosition="left-center"
+        groupOpen={tool === "zonesMove"  ||
+                   tool === "zonesPlus"  ||
+                   tool === "zonesMinus" ||
+                   tool === "zonesRemove"}
+        on:click={() => selectTool(zonesTool)}
     >
         <i class="fas fa-draw-polygon event-none"></i>
+        <svelte:fragment slot="group">
+            <UIButton
+                active={tool === "zonesMove"}
+                title="Move Zones"
+                on:click={() => {
+                    selectTool("zonesMove");
+                    zonesTool = "zonesMove";
+                }}
+            >
+                <i class="fas fa-draw-polygon event-none"></i>
+                <svelte:fragment slot="addon">
+                    <i class="fas fa-arrows-up-down-left-right event-none"></i>
+                </svelte:fragment>
+            </UIButton>
+            <UIButton
+                active={tool === "zonesPlus"}
+                title="Plus Zones"
+                on:click={() => {
+                    selectTool("zonesPlus");
+                    zonesTool = "zonesPlus";
+                }}
+            >
+                <i class="fas fa-draw-polygon event-none"></i>
+                <svelte:fragment slot="addon">
+                    <i class="fas fa-plus event-none"></i>
+                </svelte:fragment>
+            </UIButton>
+            <UIButton
+                active={tool === "zonesMinus"}
+                title="Minus Zones"
+                on:click={() => {
+                    selectTool("zonesMinus");
+                    zonesTool = "zonesMinus";
+                }}
+            >
+                <i class="fas fa-draw-polygon event-none"></i>
+                <svelte:fragment slot="addon">
+                    <i class="fas fa-minus event-none"></i>
+                </svelte:fragment>
+            </UIButton>
+            <UIButton
+                active={tool === "zonesRemove"}
+                title="Remove Zones"
+                on:click={() => {
+                    selectTool("zonesRemove");
+                    zonesTool = "zonesRemove";
+                }}
+            >
+                <i class="fas fa-draw-polygon event-none"></i>
+                <svelte:fragment slot="addon">
+                    <i class="fas fa-xmark event-none"></i>
+                </svelte:fragment>
+            </UIButton>
+        </svelte:fragment>
     </UIButton>
     <UIButton
         active={tool === "sensors"}
