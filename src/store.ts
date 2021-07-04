@@ -1,7 +1,21 @@
 import { derived, readable, writable } from "svelte/store";
 import {browser} from "$app/env";
 
-export const backendAddressStore = writable("localhost:3000");
+export const backendAddressStore = writable("", set => {
+    if (browser) {
+        // let backendAddressCookieValue = null;
+        // if (document.cookie.split(";").some((item) => item.trim().startsWith("backendAddress="))) {
+        //     backendAddressCookieValue = document.cookie
+        //         .split("; ")
+        //         .find(row => row.startsWith("backendAddress="))
+        //         .split("=")[1];
+        // }
+
+        const backendAddressCookieValue = localStorage.getItem("backendAddress");
+
+        backendAddressCookieValue ? set(backendAddressCookieValue) : set("localhost:3000");
+    }
+});
 
 export const wsStore = derived(backendAddressStore, ($backendAddressStore, set) => {
     if (browser) {

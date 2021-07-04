@@ -123,7 +123,7 @@
             >
                 <i class="fas fa-draw-polygon event-none"></i>
                 <svelte:fragment slot="addon">
-                    <i class="fas fa-xmark event-none"></i>
+                    <i class="fas fa-eraser event-none"></i>
                 </svelte:fragment>
             </UIButton>
         </svelte:fragment>

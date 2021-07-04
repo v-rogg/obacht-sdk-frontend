@@ -32,9 +32,12 @@
             font-size: $size-normal
             margin-right: .5rem
             line-height: $size-small
+
+        .beta
+            font-weight: $light
 </style>
 
 <section class='brand'>
     <h1><img src='/static/obacht-logo.svg' alt='obacht! logo' class='logo'></h1>
-    <h5><span class='bold'>Configurator</span>v0.9beta</h5>
+    <h5><span class='bold'>Configurator</span>v1.0 <span class="beta">beta</span></h5>
 </section>

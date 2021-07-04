@@ -22,6 +22,8 @@
     function updateWsStore(url) {
         if (url) {
             ws.close();
+            // document.cookie = `backendAddress=${url}; SameSite=Strict; Secure`;
+            localStorage.setItem("backendAddress", url);
             backendAddressStore.set(url);
         }
     }
