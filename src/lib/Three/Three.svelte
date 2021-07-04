@@ -1,17 +1,21 @@
 <script>
     import * as THREE from "three";
-    import { onMount } from "svelte";
+    import { onDestroy, onMount } from "svelte";
     import Stats from "stats.js";
-    import { toolStore, layersStore } from "../../store";
+    import { toolStore, layersStore, wsStore, messageStore } from "../../store";
     import { browser } from "$app/env";
     import { OrbitControls } from "$lib/Three/OrbitControls";
     import { DragControls } from "$lib/Three/DragControls";
     import { TransformControls } from "./TransformControls";
-    import LoadJumper from "$lib/UI/LoadJumper.svelte";
+    import LoadJumper from "$lib/Primitives/LoadJumper.svelte";
 
     let points = [];
     let currentIntersect = null;
     let layersProxy = {};
+    let unsubMessageStore;
+
+    let ws;
+    wsStore.subscribe(val => ws = val)
 
     let show = true;
 
@@ -45,6 +49,16 @@
             //     }
             // })
 
+            const objects = [];
+
+            unsubMessageStore = messageStore.subscribe(message => {
+                const splitMessage = message.split(";");
+                if (splitMessage[0] === "move") {
+                    let ind = objects.findIndex(obj => obj.name === splitMessage[1]);
+                    objects[ind].position.set(parseFloat(splitMessage[2]), cube.position.y, parseFloat(splitMessage[3]));
+                }
+            });
+
             const canvas = document.querySelector(`canvas#three`);
 
             let sizes = {
@@ -58,6 +72,7 @@
             let geometry = new THREE.BoxGeometry();
             const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
             const cube = new THREE.Mesh(geometry, material);
+            cube.name = "Cube";
             scene.add(cube);
 
             const tmaterial = new THREE.PointsMaterial({
@@ -112,8 +127,6 @@
             renderer.setSize(sizes.width, sizes.height);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            const objects = [];
-
             objects.push(cube);
 
             geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -136,6 +149,7 @@
 
                 object.castShadow = true;
                 object.receiveShadow = true;
+                object.name = `test${i}`
 
                 scene.add(object);
 
@@ -157,7 +171,11 @@
             controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
 
             let dragControls = new DragControls([...objects], camera, renderer.domElement);
-            // dragControls.addEventListener("drag", render);
+            dragControls.addEventListener("dragend", (event) => {
+                console.log(event.object);
+                const message = "move;" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
+                ws.send(message);
+            });
 
             let transformControls = new TransformControls(camera, renderer.domElement);
             transformControls.setMode("rotate");
@@ -251,6 +269,10 @@
             }
         });
     }
+
+    onDestroy(() => {
+        unsubMessageStore;
+    })
 </script>
 
 <style lang="sass">
