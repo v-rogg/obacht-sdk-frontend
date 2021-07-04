@@ -1,9 +1,9 @@
 <script lang="ts">
-    import UIButton from "$lib/UI/UIButton.svelte";
+    import UIButton from "$lib/UI/UIButton/UIButton.svelte";
     import { hotkeysStore, recordingStore, outputSettingsStore } from "$lib/../store";
     import { onDestroy } from "svelte";
-    import Checkbox from "../Primitives/Checkbox.svelte";
-    import Input from "../Primitives/Input.svelte";
+    import Checkbox from "$lib/Primitives/Checkbox.svelte";
+    import Input from "$lib/Primitives/Input.svelte";
 
     let hotkeys = {};
     let paused: boolean = false;
@@ -76,7 +76,7 @@
         hotkey={hotkeys.toolOutput}
         disabled={recording}
         bind:popupOpen={outputOptionsOpen}
-        popupPosition="mid top"
+        popupPosition="top-center"
         popupGridColumnsCount="2"
         on:click={() => {outputOptionsOpen = !outputOptionsOpen}}
     >
@@ -86,7 +86,7 @@
                     outputSettings.MQTT.enabled = change.detail;
                     outputSettingsStore.set(outputSettings);
                 }}/>
-                <Input type="text" disabled value="192.168.178.48   topic: output" />
+                <Input disabled value="192.168.178.48   topic: output" />
                 <Checkbox label="JSON" value={outputSettings.JSON.enabled} on:change={(change) => {
                     outputSettings.JSON.enabled = change.detail;
                     outputSettingsStore.set(outputSettings);

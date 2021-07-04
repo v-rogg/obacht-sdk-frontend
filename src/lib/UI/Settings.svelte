@@ -1,9 +1,9 @@
 <script lang="ts">
-    import UIButton from "./UIButton.svelte";
+    import UIButton from "$lib/UI/UIButton/UIButton.svelte";
     import { backendAddressStore, hotkeysStore, showTooltipStore, wsConnectionStore, wsStore } from "$lib/../store";
     import { onDestroy } from "svelte";
     import Checkbox from "$lib/Primitives/Checkbox.svelte";
-    import Input from "../Primitives/Input.svelte";
+    import Input from "$lib/Primitives/Input.svelte";
     // import { browser } from "$app/env";
 
     let hotkeys = "";
@@ -62,7 +62,7 @@
         hotkey={hotkeys.toolSettings}
         bind:popupOpen={settingsPopupOpen}
         danger={!wsConnectionStatus}
-        popupPosition="left top"
+        popupPosition="top-left"
         popupGridColumnsCount="1"
         on:click={() => {settingsPopupOpen = !settingsPopupOpen}}
     >

@@ -175,10 +175,10 @@
 
             // const clock = new THREE.Clock();
 
-            let gridSmall = new THREE.GridHelper(1000, 1000);
+            let gridSmall = new THREE.GridHelper(1000, 1000, 0xF4F5F7, 0xF4F5F7);
             scene.add(gridSmall);
 
-            let gridBig = new THREE.GridHelper(1000, 100);
+            let gridBig = new THREE.GridHelper(1000, 100, 0xDFE1E4, 0xDFE1E4);
             scene.add(gridBig);
 
             const raycaster = new THREE.Raycaster();
@@ -209,13 +209,15 @@
                 cube.scale.set(1, 1, 1).multiplyScalar(factor / 10);
 
                 if (layersProxy.includes("layerGrid")) {
-                    if (camera.zoom <= .5) {
-                        gridBig.visible = true;
-                        gridSmall.visible = false;
-                    } else {
-                        gridBig.visible = false;
-                        gridSmall.visible = true;
-                    }
+                    // if (camera.zoom <= .5) {
+                    //     gridBig.visible = true;
+                    //     gridSmall.visible = false;
+                    // } else {
+                    //     gridBig.visible = false;
+                    //     gridSmall.visible = true;
+                    // }
+                    gridBig.visible = true;
+                    gridSmall.visible = true;
                 } else {
                     gridBig.visible = false;
                     gridSmall.visible = false;

@@ -26,7 +26,7 @@ export const wsConnectionStore = derived(wsStore, ($wsStore, set) => {
 }, null);
 
 export const messageStore = derived(wsStore, ($wsStore, set) => {
-    $wsStore.addEventListener("message", (event) => set(event.data));
+    if ($wsStore) $wsStore.addEventListener("message", (event) => set(event.data));
 }, "");
 
 export const hotkeysStore = writable("");
@@ -37,7 +37,7 @@ export const mobileCheckStore = readable(false, set => {
     }
 });
 
-export const showTooltipStore = writable(true);
+export const showTooltipStore = writable(false);
 
 export const layersStore = writable(["layerSensors", "layerRawData"]);
 export const toolStore = writable("hand");

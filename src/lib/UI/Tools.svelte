@@ -1,7 +1,7 @@
 <script lang="ts">
     import { hotkeysStore, toolStore, recordingStore } from "$lib/../store";
     import { onDestroy } from 'svelte';
-    import UIButton from "$lib/UI/UIButton.svelte";
+    import UIButton from "$lib/UI/UIButton/UIButton.svelte";
 
     let hotkeys = "";
     let tool: string = "hand";

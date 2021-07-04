@@ -3,17 +3,23 @@
     import { hotkey as hotkeyAction } from "$lib/Actions/hotkeys";
     import { clickOutside } from "$lib/Actions/clickOutside";
     import { createEventDispatcher } from "svelte";
-    import Popup from "$lib/UI/Popup.svelte";
     import { fade } from "svelte/transition";
+    import Popup from "$lib/UI/UIButton/Popup.svelte";
+    import Group from "$lib/UI/UIButton/Group.svelte";
 
-    export let active: boolean;
-    export let title: string;
-    export let hotkey: string;
-    export let disabled: boolean;
-    export let danger: boolean;
-    export let popupOpen;
-    export let popupPosition: string;
-    export let popupGridColumnsCount;
+    export let active: boolean = true;
+    export let title: string = "";
+    export let hotkey: string = "";
+    export let disabled: boolean = false;
+    export let danger: boolean = false;
+    export let popupOpen: boolean = false;
+    export let popupPosition: string = "top-center";
+    export let popupBg: boolean = true;
+    export let popupGridColumnsCount: number = 2;
+
+    export let groupOpen: boolean = false;
+    export let groupPosition: string = "right-center";
+    const groupSide = groupPosition.split("-")[0];
 
     const dispatch = createEventDispatcher();
 </script>
@@ -50,8 +56,8 @@
 
     .lock, .danger
         position: absolute
-        bottom: 6px
-        right: 6px
+        bottom: .25rem
+        right: .25rem
         font-size: .85rem
 
     .lock
@@ -59,6 +65,25 @@
 
     .danger
         color: $red
+
+    .group
+        position: absolute
+        font-size: .85rem
+        bottom: 0
+        > *
+            transform: rotateZ(45deg)
+
+    .right, .top, .bottom
+        right: .25rem
+
+    .left
+        left: .25rem
+
+    .addon
+        position: absolute
+        font-size: 1rem
+        top: .25rem
+        right: .5rem
 </style>
 
 <div class="ui-button">
@@ -72,6 +97,10 @@
             on:click={() => {dispatch("click")}}
     >
         <slot/>
+        <span class="addon">
+            <slot name="addon"/>
+        </span>
+
         <span class="lock event-none" class:hidden={!disabled}>
             <i class="fas fa-lock"></i>
         </span>
@@ -79,14 +108,31 @@
         <span class="danger event-none" class:hidden={!danger}>
             <i class="fas fa-triangle-exclamation"></i>
         </span>
+
+        {#if $$slots.group}
+            <span class="group event-none {groupSide}">
+                <i class="fa-solid fa-caret-right"></i>
+            </span>
+        {/if}
     </button>
 
     {#if $$slots.popup && popupOpen}
         <div transition:fade="{{duration: 50 }}"
              use:clickOutside={() => {popupOpen = false}}>
-            <Popup position={popupPosition} gridColumnnsCount={popupGridColumnsCount}>
+            <Popup
+                position={popupPosition}
+                bg={popupBg}
+                gridColumnnsCount={popupGridColumnsCount}>
                 <slot name="popup"/>
             </Popup>
+        </div>
+    {/if}
+
+    {#if $$slots.group && groupOpen}
+        <div transition:fade="{{duration: 50 }}">
+            <Group position={groupPosition}>
+                <slot name="group"/>
+            </Group>
         </div>
     {/if}
 </div>

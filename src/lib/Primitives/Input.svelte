@@ -1,8 +1,8 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
 
-    export let value;
-    export let disabled;
+    export let value: string = "";
+    export let disabled: boolean = false;
 
     const dispatch = createEventDispatcher();
 </script>
