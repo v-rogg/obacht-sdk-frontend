@@ -16,10 +16,8 @@
     export let popupPosition: string = "top-center";
     export let popupBg: boolean = true;
     export let popupGridColumnsCount: number = 2;
-
-    export let groupOpen: boolean = false;
-    export let groupPosition: string = "right-center";
-    const groupSide = groupPosition.split("-")[0];
+    export let popupType: string = "popup"
+    const popupSide = popupPosition.split("-")[0];
 
     const dispatch = createEventDispatcher();
 </script>
@@ -111,14 +109,14 @@
             <i class="fas fa-triangle-exclamation"></i>
         </span>
 
-        {#if $$slots.group}
-            <span class="group event-none {groupSide}">
+        {#if $$slots.popup && popupType === "group"}
+            <span class="group event-none {popupSide}">
                 <i class="fa-solid fa-caret-right"></i>
             </span>
         {/if}
     </button>
 
-    {#if $$slots.popup && popupOpen}
+    {#if $$slots.popup && popupOpen && popupType === "popup"}
         <div transition:fade="{{duration: 50 }}"
              use:clickOutside={() => {popupOpen = false}}>
             <Popup
@@ -130,10 +128,10 @@
         </div>
     {/if}
 
-    {#if $$slots.group && groupOpen}
+    {#if $$slots.popup && popupOpen && popupType === "group"}
         <div transition:fade="{{duration: 50 }}">
-            <Group position={groupPosition}>
-                <slot name="group"/>
+            <Group position={popupPosition}>
+                <slot name="popup"/>
             </Group>
         </div>
     {/if}

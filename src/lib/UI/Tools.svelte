@@ -64,15 +64,16 @@
         title="Zones"
         hotkey={hotkeys.toolZones}
         disabled={recording}
-        groupPosition="left-center"
-        groupOpen={tool === "zonesMove"  ||
+        popupPosition="left-center"
+        popupType="group"
+        popupOpen={tool === "zonesMove"  ||
                    tool === "zonesPlus"  ||
                    tool === "zonesMinus" ||
                    tool === "zonesRemove"}
         on:click={() => selectTool(zonesTool)}
     >
         <i class="fas fa-draw-polygon event-none"></i>
-        <svelte:fragment slot="group">
+        <svelte:fragment slot="popup">
             <UIButton
                 active={tool === "zonesMove"}
                 title="Move Zones"
