@@ -98,6 +98,7 @@ class TransformControls extends THREE.Object3D {
 		defineProperty( 'showX', true );
 		defineProperty( 'showY', true );
 		defineProperty( 'showZ', true );
+		defineProperty( 'showE', true );
 
 		// Reusable utility variables
 
@@ -817,6 +818,12 @@ class TransformControlsGizmo extends THREE.Object3D {
 		const matLineYellowTransparent = matLineYellow.clone();
 		matLineYellowTransparent.opacity = 0.25;
 
+        const matLineBlack = gizmoLineMaterial.clone();
+        matLineBlack.color.set( 0x000000 );
+
+		const matLineObacht = gizmoLineMaterial.clone();
+		matLineObacht.color.set( 0xDFE1E4 );
+
 		// reusable geometry
 
 		const arrowGeometry = new THREE.CylinderGeometry( 0, 0.05, 0.2, 12, 1, false );
@@ -952,11 +959,12 @@ class TransformControlsGizmo extends THREE.Object3D {
 				[ new THREE.Mesh( new THREE.OctahedronGeometry( 0.04, 0 ), matBlue ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ]],
 			],
 			E: [
-				[ new THREE.Line( CircleGeometry( 1.25, 1 ), matLineYellowTransparent ), null, [ 0, Math.PI / 2, 0 ]],
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0, 0.15, 4, 1, false ), matLineYellowTransparent ), [ 1.17, 0, 0 ], [ 0, 0, - Math.PI / 2 ], [ 1, 1, 0.001 ]],
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0, 0.15, 4, 1, false ), matLineYellowTransparent ), [ - 1.17, 0, 0 ], [ 0, 0, Math.PI / 2 ], [ 1, 1, 0.001 ]],
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0, 0.15, 4, 1, false ), matLineYellowTransparent ), [ 0, - 1.17, 0 ], [ Math.PI, 0, 0 ], [ 1, 1, 0.001 ]],
-				[ new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0, 0.15, 4, 1, false ), matLineYellowTransparent ), [ 0, 1.17, 0 ], [ 0, 0, 0 ], [ 1, 1, 0.001 ]],
+				[ new THREE.Line( CircleGeometry( 0.105, 1 ), matLineBlack ), null, [ 0, Math.PI / 2, 0 ]],
+				[ new THREE.Mesh( new THREE.TorusGeometry( 0.1, 0.005, 4, 24 ), matLineObacht ), null, [ 0, 0, 0 ]],
+				// [ new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0, 0.02, 4, 1, false ), matLineBlack ), [ 0.087, 0, 0 ], [ 0, 0, - Math.PI / 2 ], [ 1, 1, 0.001 ]],
+				// [ new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0, 0.02, 4, 1, false ), matLineBlack ), [ - 0.087, 0, 0 ], [ 0, 0, Math.PI / 2 ], [ 1, 1, 0.001 ]],
+				// [ new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0, 0.02, 4, 1, false ), matLineBlack ), [ 0, - 0.087, 0 ], [ Math.PI, 0, 0 ], [ 1, 1, 0.001 ]],
+				// [ new THREE.Mesh( new THREE.CylinderGeometry( 0.03, 0, 0.02, 4, 1, false ), matLineBlack ), [ 0, 0.087, 0 ], [ 0, 0, 0 ], [ 1, 1, 0.001 ]],
 			],
 			XYZE: [
 				[ new THREE.Line( CircleGeometry( 1, 1 ), matLineGray ), null, [ 0, Math.PI / 2, 0 ]]
@@ -980,7 +988,7 @@ class TransformControlsGizmo extends THREE.Object3D {
 				[ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
 			],
 			E: [
-				[ new THREE.Mesh( new THREE.TorusGeometry( 1.25, 0.1, 2, 24 ), matInvisible ) ]
+				[ new THREE.Mesh( new THREE.TorusGeometry( 0.1, 0.05, 2, 24 ), matRed ) ]
 			],
 			XYZE: [
 				[ new THREE.Mesh( new THREE.SphereGeometry( 0.7, 10, 8 ), matInvisible ) ]
@@ -1501,7 +1509,7 @@ class TransformControlsGizmo extends THREE.Object3D {
 			handle.visible = handle.visible && ( handle.name.indexOf( 'X' ) === - 1 || this.showX );
 			handle.visible = handle.visible && ( handle.name.indexOf( 'Y' ) === - 1 || this.showY );
 			handle.visible = handle.visible && ( handle.name.indexOf( 'Z' ) === - 1 || this.showZ );
-			handle.visible = handle.visible && ( handle.name.indexOf( 'E' ) === - 1 || ( this.showX && this.showY && this.showZ ) );
+			handle.visible = handle.visible && ( handle.name.indexOf( 'E' ) === - 1 || this.showE );
 
 			// highlight selected axis
 
