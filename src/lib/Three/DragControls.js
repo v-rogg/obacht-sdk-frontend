@@ -186,7 +186,13 @@ class DragControls extends THREE.EventDispatcher {
 
 			if ( _intersections.length > 0 && scope.enabled ) {
 
-				_selected = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
+
+			    // :TODO OWN----------------
+                const s = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
+				_selected = s.parent.type === "Group" ? s.parent : s;
+
+			    // OWN----------------
+				// _selected = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
 
 				if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
 
@@ -282,7 +288,12 @@ class DragControls extends THREE.EventDispatcher {
 
 			if ( _intersections.length > 0 ) {
 
-				_selected = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
+                // :TODO OWN----------------
+                const s = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
+                _selected = s.parent.type === "Group" ? s.parent : s;
+
+                // ------------------------
+				// _selected = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
 
 				_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
 

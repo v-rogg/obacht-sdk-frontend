@@ -8,10 +8,12 @@
     import { DragControls } from "$lib/Three/DragControls";
     import { TransformControls } from "./TransformControls";
     import LoadJumper from "$lib/Primitives/LoadJumper.svelte";
+    import { SVGLoader } from "$lib/THREE/SVGLoader.js";
 
     let points = [];
     let currentIntersect = null;
     let layersProxy = {};
+    let toolStoreProxy = "";
     let unsubMessageStore;
 
     let ws;
@@ -19,9 +21,18 @@
 
     let show = true;
 
+    let compassRotation = 0;
+    let camera;
+
     layersStore.subscribe(val => {
         layersProxy = val;
     });
+
+    let mapSize = 1000;
+
+    let dragging;
+
+    const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 
     if (browser) {
         onMount(async () => {
@@ -49,7 +60,11 @@
             //     }
             // })
 
+            const svgLoader = new SVGLoader();
+
             const objects = [];
+            const scaleObjects = [];
+            const draggableObjects = [];
 
             unsubMessageStore = messageStore.subscribe(message => {
                 const splitMessage = message.split(";");
@@ -73,6 +88,7 @@
             const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
             const cube = new THREE.Mesh(geometry, material);
             cube.name = "Cube";
+            cube.position.set(0, .5, 2);
             scene.add(cube);
 
             const tmaterial = new THREE.PointsMaterial({
@@ -85,7 +101,7 @@
             scene.add(pointCloud);
 
             const aspectRatio = sizes.width / sizes.height;
-            const camera = new THREE.OrthographicCamera(-5 * aspectRatio, 5 * aspectRatio, 5, -5, 0.1, 10000);
+            camera = new THREE.OrthographicCamera(-5 * aspectRatio, 5 * aspectRatio, 5, -5, 0, 2000);
             camera.position.y = 100;
 
             window.addEventListener("resize", () => {
@@ -115,7 +131,7 @@
             });
 
             canvas.addEventListener("click", () => {
-                if (currentIntersect) {
+                if (currentIntersect && !dragging) {
                     console.log(`clicked on`, currentIntersect);
                 }
             });
@@ -123,69 +139,153 @@
             const renderer = new THREE.WebGLRenderer({
                 canvas: canvas,
                 alpha: true,
+                antialias: true,
             });
             renderer.setSize(sizes.width, sizes.height);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
             objects.push(cube);
+            scaleObjects.push(cube);
+            draggableObjects.push(cube);
 
-            geometry = new THREE.BoxGeometry(1, 1, 1);
+            // geometry = new THREE.BoxGeometry(1, 1, 1);
 
-            for (let i = 0; i < 200; i++) {
+            // for (let i = 0; i < 200; i++) {
+            //
+            //     const object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0x4E5256 }));
+            //
+            //     object.position.x = Math.random() * 100 - 50;
+            //     object.position.y = Math.random() * 30;
+            //     object.position.z = Math.random() * 80 - 40;
+            //
+            //     object.rotation.x = Math.random() * 2 * Math.PI;
+            //     object.rotation.y = Math.random() * 2 * Math.PI;
+            //     object.rotation.z = Math.random() * 2 * Math.PI;
+            //
+            //     object.scale.x = Math.random() * 2 + 1;
+            //     object.scale.y = Math.random() * 2 + 1;
+            //     object.scale.z = Math.random() * 2 + 1;
+            //
+            //     object.castShadow = true;
+            //     object.receiveShadow = true;
+            //     object.name = `test${i}`
+            //
+            //     scene.add(object);
+            //
+            //     objects.push(object);
+            // }
 
-                const object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0x4E5256 }));
 
-                object.position.x = Math.random() * 100 - 50;
-                object.position.y = Math.random() * 30;
-                object.position.z = Math.random() * 80 - 40;
+            let transformControls = new TransformControls(camera, renderer.domElement);
+            transformControls.setMode("rotate");
+            // transformControls.attach(cube);
+            // transformControls.showX = false;
+            // transformControls.showY = false;
+            // transformControls.showZ = false;
+            scene.add(transformControls);
 
-                object.rotation.x = Math.random() * 2 * Math.PI;
-                object.rotation.y = Math.random() * 2 * Math.PI;
-                object.rotation.z = Math.random() * 2 * Math.PI;
+            let dragControls;
 
-                object.scale.x = Math.random() * 2 + 1;
-                object.scale.y = Math.random() * 2 + 1;
-                object.scale.z = Math.random() * 2 + 1;
+            svgLoader.load(
+                // resource URL
+                'icons/three/sensorIcon.svg',
+                // called when the resource is loaded
+                function ( data ) {
 
-                object.castShadow = true;
-                object.receiveShadow = true;
-                object.name = `test${i}`
+                    const paths = data.paths;
+                    const group = new THREE.Group();
 
-                scene.add(object);
+                    for ( let i = 0; i < paths.length; i++ ) {
 
-                objects.push(object);
-            }
+                        const path = paths[ i ];
+
+                        const material = new THREE.MeshBasicMaterial( {
+                            color: path.color,
+                            side: THREE.DoubleSide,
+                            depthWrite: false
+                        } );
+
+                        const shapes = SVGLoader.createShapes( path );
+
+                        for ( let j = 0; j < shapes.length; j ++ ) {
+
+                            const shape = shapes[ j ];
+                            const geometry = new THREE.ShapeGeometry( shape );
+                            const mesh = new THREE.Mesh( geometry, material );
+                            mesh.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), Math.PI/2);
+                            mesh.scale.set(0.01, 0.01, 0.01);
+
+                            group.add( mesh );
+
+                        }
+                    }
+                    group.name = "sensor";
+                    group.position.set(0, 1, 0);
+                    objects.push(group);
+                    scaleObjects.push(group);
+                    draggableObjects.push(group);
+                    scene.add( group );
+                    // transformControls.attach(group);
+                    dragControls.dispose();
+                    dragControls = new DragControls([...draggableObjects], camera, renderer.domElement);
+                    dragControls.enabled = toolStoreProxy !== "hand";
+                    dragControls.addEventListener("dragstart", (event) => {
+                        dragging = true;
+                        console.log(dragging, "dragging");
+                    })
+                    dragControls.addEventListener("dragend", (event) => {
+                        dragging = false;
+                        console.log(event.object);
+                        console.log(dragging, "dragging");
+                        const message = "move;" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
+                        ws.send(message);
+                    });
+                },
+                // called when loading is in progresses
+                function ( xhr ) {
+                    console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+                },
+                // called when loading has errors
+                function ( error ) {
+                    console.log( 'An error happened', error);
+                }
+            );
 
             let controls = new OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
+            controls.dampingFactor = 0.3;
+            controls.rotateSpeed = 0.25;
             controls.screenSpacePanning = false;
-            controls.minZoom = 0.25;
+            controls.minZoom = 0.5;
             controls.maxZoom = 2;
             controls.zoomSpeed = 2;
-            controls.minPolarAngle = 0;
-            controls.maxPolarAngle = 0;
+            // controls.minPolarAngle = 0;
+            // controls.maxPolarAngle = 0;
+            controls.minPan = new THREE.Vector3(-mapSize/2, -100, -mapSize/2);
+            controls.maxPan = new THREE.Vector3(mapSize/2, 100, mapSize/2);
             controls.mouseButtons.LEFT = THREE.MOUSE.PAN;
             controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
             controls.touches.ONE = THREE.TOUCH.PAN;
             controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+            controls.addEventListener("change", () => {
+                compassRotation = THREE.MathUtils.radToDeg(controls.getAzimuthalAngle());
+            });
 
-            let dragControls = new DragControls([...objects], camera, renderer.domElement);
+            dragControls = new DragControls([...draggableObjects], camera, renderer.domElement);
+            dragControls.addEventListener("drag", (event) => {
+                dragging = true;
+                console.log(dragging, "dragging");
+            })
             dragControls.addEventListener("dragend", (event) => {
+                dragging = false;
                 console.log(event.object);
+                console.log(dragging, "dragging");
                 const message = "move;" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
                 ws.send(message);
             });
 
-            let transformControls = new TransformControls(camera, renderer.domElement);
-            transformControls.setMode("rotate");
-            transformControls.attach(cube);
-            transformControls.showX = false;
-            transformControls.showY = false;
-            transformControls.showZ = false;
-            scene.add(transformControls);
-
             toolStore.subscribe(val => {
+                toolStoreProxy = val;
                 controls.enableRotate = val === "hand";
                 controls.enablePan = val === "hand";
                 dragControls.enabled = val !== "hand";
@@ -193,11 +293,19 @@
 
             // const clock = new THREE.Clock();
 
-            let gridSmall = new THREE.GridHelper(1000, 1000, 0xF4F5F7, 0xF4F5F7);
+            let gridSmall = new THREE.GridHelper(mapSize, mapSize, 0xF4F5F7, 0xF4F5F7);
             scene.add(gridSmall);
 
-            let gridBig = new THREE.GridHelper(1000, 100, 0xDFE1E4, 0xDFE1E4);
+            let gridBig = new THREE.GridHelper(mapSize, mapSize/10, 0xDFE1E4, 0xDFE1E4);
             scene.add(gridBig);
+
+            const infinityPlaneGeometry = new THREE.PlaneGeometry(mapSize, mapSize);
+            const infinityPlane = new THREE.Mesh(infinityPlaneGeometry, material);
+            infinityPlane.visible = false;
+            infinityPlane.rotateX(-Math.PI/2);
+            infinityPlane.position.set(0, 0, 0);
+            scene.add(infinityPlane);
+            objects.push(infinityPlane);
 
             const raycaster = new THREE.Raycaster();
 
@@ -212,7 +320,7 @@
                 // let intersects = raycaster.intersectObject(cube);
 
 
-                if (intersects.length) {
+                if (intersects.length && !dragging) {
                     currentIntersect = intersects[0];
 
                     if (currentIntersect.Object) {
@@ -223,8 +331,11 @@
                     currentIntersect = null;
                 }
 
-                const factor = (camera.top - camera.bottom) / camera.zoom;
-                cube.scale.set(1, 1, 1).multiplyScalar(factor / 10);
+                const factor = (((camera.top - camera.bottom) / camera.zoom) / sizes.height) * 1000;
+
+                scaleObjects.forEach(obj => {
+                    obj.scale.set(1, 1, 1).multiplyScalar(factor/ 10);
+                })
 
                 if (layersProxy.includes("layerGrid")) {
                     // if (camera.zoom <= .5) {
@@ -281,7 +392,18 @@
         top: 0
         left: 0
         outline: none
+
+    .compass
+        position: fixed
+        bottom: 2rem
+        left: 2rem
+
+        &:hover
+            cursor: pointer
 </style>
 
 <canvas id="three"></canvas>
+<div class="compass"><img src="/icons/compass.svg" style="transform: rotateZ({compassRotation}deg)" alt="compass"
+    on:click={() => {camera.position.set(0, 0, 0); camera.azimuthAngle = 0}}
+/></div>
 <LoadJumper show={show}/>
