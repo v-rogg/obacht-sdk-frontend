@@ -66,8 +66,12 @@ class OrbitControls extends THREE.EventDispatcher {
 		this.panSpeed = 1.0;
 		this.screenSpacePanning = true; // if false, pan orthogonal to world-space direction camera.up
 		this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
+        // Limit Pan TODO: OWN
+        this.minPan = new THREE.Vector3(-2, -2, -2);
+        this.maxPan = new THREE.Vector3(2, 2, 2);
 
-		// Set to true to automatically rotate around the target
+
+        // Set to true to automatically rotate around the target
 		// If auto-rotate is enabled, you must call controls.update() in your animation loop
 		this.autoRotate = false;
 		this.autoRotateSpeed = 2.0; // 30 seconds per orbit when fps is 60
@@ -226,6 +230,10 @@ class OrbitControls extends THREE.EventDispatcher {
 					scope.target.add( panOffset );
 
 				}
+
+				// TODO: OWN
+                scope.target.clamp(scope.minPan, scope.maxPan);
+
 
 				offset.setFromSpherical( spherical );
 
