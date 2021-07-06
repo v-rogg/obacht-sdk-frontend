@@ -70,7 +70,11 @@
                 const splitMessage = message.split(";");
                 if (splitMessage[0] === "move") {
                     let ind = objects.findIndex(obj => obj.name === splitMessage[1]);
-                    objects[ind].position.set(parseFloat(splitMessage[2]), cube.position.y, parseFloat(splitMessage[3]));
+                    objects[ind].position.set(parseFloat(splitMessage[2]), objects[ind].position.y, parseFloat(splitMessage[3]));
+                } else if (splitMessage[0] === "rotate") {
+                    let ind = objects.findIndex(obj => obj.name === splitMessage[1]);
+                    // objects[ind].rotation.set(parseFloat(splitMessage[2]), parseFloat(splitMessage[3]), parseFloat(splitMessage[4]));
+                    objects[ind].rotation.set(0, parseFloat(splitMessage[2]), 0);
                 }
             });
 
@@ -178,10 +182,32 @@
 
             let transformControls = new TransformControls(camera, renderer.domElement);
             transformControls.setMode("rotate");
-            // transformControls.attach(cube);
-            // transformControls.showX = false;
+            transformControls.showX = false;
             // transformControls.showY = false;
-            // transformControls.showZ = false;
+            transformControls.showZ = false;
+            transformControls.showE = false;
+            transformControls.addEventListener("mouseDown", (event) => {
+                dragging = true;
+                console.log(dragging, "rotating");
+            })
+            transformControls.addEventListener("mouseUp", (event) => {
+                dragging = false;
+                console.log(dragging, "rotating");
+                console.log(transformControls.object.rotation.x, transformControls.object.rotation.y, transformControls.object.rotation.z);
+                let y = transformControls.object.rotation.y;
+                if ((transformControls.object.rotation.x < 0 || transformControls.object.rotation.z < 0) || (transformControls.object.rotation.x > Math.PI - 0.1 || transformControls.object.rotation.z > Math.PI - 0.1)) {
+                    y = Math.PI/2 + (Math.PI/2 - transformControls.object.rotation.y);
+                    if (y > Math.PI) {
+                        y = - (Math.PI/2 + (Math.PI/2 + transformControls.object.rotation.y));
+                    }
+                    console.log(y);
+                }
+                // const message = "rotate;" + transformControls.object.name + ";" + (Math.trunc(transformControls.object.rotation.x * 1000 ) / 1000) + ";" + (Math.trunc(transformControls.object.rotation.y * 1000 ) / 1000) + ";" + (Math.trunc(transformControls.object.rotation.z * 1000 ) / 1000)
+                const message = "rotate;" + transformControls.object.name + ";" + (Math.trunc(y * 1000 ) / 1000);
+                ws.send(message);
+            });
+            transformControls.addEventListener("change", (event) => {
+            })
             scene.add(transformControls);
 
             let dragControls;
@@ -225,7 +251,7 @@
                     scaleObjects.push(group);
                     draggableObjects.push(group);
                     scene.add( group );
-                    // transformControls.attach(group);
+                    transformControls.attach(group);
                     dragControls.dispose();
                     dragControls = new DragControls([...draggableObjects], camera, renderer.domElement);
                     dragControls.enabled = toolStoreProxy !== "hand";
@@ -237,7 +263,7 @@
                         dragging = false;
                         console.log(event.object);
                         console.log(dragging, "dragging");
-                        const message = "move;" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
+                        const message = "move;" + event.object.name + ";" + (Math.trunc(event.object.position.x * 1000 ) / 1000) + ";" + (Math.trunc(event.object.position.z * 1000 ) / 1000)
                         ws.send(message);
                     });
                 },
@@ -272,7 +298,7 @@
             });
 
             dragControls = new DragControls([...draggableObjects], camera, renderer.domElement);
-            dragControls.addEventListener("drag", (event) => {
+            dragControls.addEventListener("dragstart", (event) => {
                 dragging = true;
                 console.log(dragging, "dragging");
             })

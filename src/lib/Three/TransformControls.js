@@ -473,7 +473,7 @@ class TransformControls extends THREE.Object3D {
 				this.rotationAxis.copy( this._offset ).cross( this.eye ).normalize();
 				this.rotationAngle = this._offset.dot( _tempVector.copy( this.rotationAxis ).cross( this.eye ) ) * ROTATION_SPEED;
 
-			} else if ( axis === 'X' || axis === 'Y' || axis === 'Z' ) {
+			} else if ( axis === 'X' || axis === 'Z' ) {
 
 				this.rotationAxis.copy( _unit[ axis ] );
 
@@ -487,6 +487,14 @@ class TransformControls extends THREE.Object3D {
 
 				this.rotationAngle = this._offset.dot( _tempVector.cross( this.eye ).normalize() ) * ROTATION_SPEED;
 
+			} else if ( axis === 'Y' ) {
+                this.rotationAxis.copy( _unit[ axis ] );
+                this.rotationAngle = this.pointEnd.angleTo( this.pointStart );
+
+                this._startNorm.copy( this.pointStart ).normalize();
+                this._endNorm.copy( this.pointEnd ).normalize();
+
+                this.rotationAngle *= ( this._endNorm.cross( this._startNorm ).dot( _unit[ axis ] ) < 0 ? 1 : - 1 )
 			}
 
 			// Apply rotation snap
@@ -494,7 +502,7 @@ class TransformControls extends THREE.Object3D {
 			if ( this.rotationSnap ) this.rotationAngle = Math.round( this.rotationAngle / this.rotationSnap ) * this.rotationSnap;
 
 			// Apply rotate
-			if ( space === 'local' && axis !== 'E' && axis !== 'XYZE' ) {
+			if ( space === 'local' && axis !== 'E' && axis !== 'XYZE' && axis !== 'Y' ) {
 
 				object.quaternion.copy( this._quaternionStart );
 				object.quaternion.multiply( _tempQuaternion.setFromAxisAngle( this.rotationAxis, this.rotationAngle ) ).normalize();
@@ -951,8 +959,10 @@ class TransformControlsGizmo extends THREE.Object3D {
 				[ new THREE.Mesh( new THREE.OctahedronGeometry( 0.04, 0 ), matRed ), [ 0, 0, 0.99 ], null, [ 1, 3, 1 ]],
 			],
 			Y: [
-				[ new THREE.Line( CircleGeometry( 1, 0.5 ), matLineGreen ), null, [ 0, 0, - Math.PI / 2 ]],
-				[ new THREE.Mesh( new THREE.OctahedronGeometry( 0.04, 0 ), matGreen ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ]],
+				// [ new THREE.Line( CircleGeometry( 1, 0.5 ), matLineGreen ), null, [ 0, 0, - Math.PI / 2 ]],
+				// [ new THREE.Mesh( new THREE.OctahedronGeometry( 0.04, 0 ), matGreen ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ]],
+                [ new THREE.Line( CircleGeometry( 0.105, 1 ), matLineBlack ), null, [ 0, Math.PI / 2, 0 ]],
+                [ new THREE.Mesh( new THREE.TorusGeometry( 0.1, 0.005, 4, 24 ), matLineObacht ), null, [ 0, 0, 0 ]],
 			],
 			Z: [
 				[ new THREE.Line( CircleGeometry( 1, 0.5 ), matLineBlue ), null, [ 0, Math.PI / 2, 0 ]],
@@ -982,7 +992,8 @@ class TransformControlsGizmo extends THREE.Object3D {
 				[ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, - Math.PI / 2, - Math.PI / 2 ]],
 			],
 			Y: [
-				[ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ]],
+				// [ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ]],
+                [ new THREE.Mesh( new THREE.TorusGeometry( 0.1, 0.05, 2, 24 ), matRed ) ]
 			],
 			Z: [
 				[ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
@@ -1489,9 +1500,10 @@ class TransformControlsGizmo extends THREE.Object3D {
 
 				if ( handle.name === 'Y' ) {
 
-					_tempQuaternion.setFromAxisAngle( _unitY, Math.atan2( _alignVector.x, _alignVector.z ) );
-					_tempQuaternion.multiplyQuaternions( _tempQuaternion2, _tempQuaternion );
-					handle.quaternion.copy( _tempQuaternion );
+					// _tempQuaternion.setFromAxisAngle( _unitY, Math.atan2( _alignVector.x, _alignVector.z ) );
+					// _tempQuaternion.multiplyQuaternions( _tempQuaternion2, _tempQuaternion );
+					// handle.quaternion.copy( _tempQuaternion );
+                    handle.quaternion.setFromRotationMatrix( _lookAtMatrix.lookAt( this.eye, _zeroVector, _unitY ) );
 
 				}
 
