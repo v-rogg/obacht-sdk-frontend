@@ -2,7 +2,7 @@
     import * as THREE from "three";
     import { onDestroy, onMount } from "svelte";
     import Stats from "stats.js";
-    import { toolStore, layersStore, wsStore, messageStore } from "../../store";
+    import { toolStore, layersStore, wsStore, messageStore, sensorStore } from "../../store";
     import { browser } from "$app/env";
     import { OrbitControls } from "$lib/Three/OrbitControls";
     import { DragControls } from "$lib/Three/DragControls";
@@ -11,13 +11,16 @@
     import { SVGLoader } from "$lib/THREE/SVGLoader.js";
 
     let points = [];
+    let sensors;
     let currentIntersect = null;
     let layersProxy = {};
     let toolStoreProxy = "";
     let unsubMessageStore;
 
     let ws;
-    wsStore.subscribe(val => ws = val)
+    wsStore.subscribe(val => ws = val);
+
+    sensorStore.subscribe(val => sensors = val);
 
     let show = true;
 
@@ -68,13 +71,36 @@
 
             unsubMessageStore = messageStore.subscribe(message => {
                 const splitMessage = message.split(";");
-                if (splitMessage[0] === "move") {
-                    let ind = objects.findIndex(obj => obj.name === splitMessage[1]);
-                    objects[ind].position.set(parseFloat(splitMessage[2]), objects[ind].position.y, parseFloat(splitMessage[3]));
-                } else if (splitMessage[0] === "rotate") {
-                    let ind = objects.findIndex(obj => obj.name === splitMessage[1]);
-                    // objects[ind].rotation.set(parseFloat(splitMessage[2]), parseFloat(splitMessage[3]), parseFloat(splitMessage[4]));
-                    objects[ind].rotation.set(0, parseFloat(splitMessage[2]), 0);
+                if (splitMessage[0] === "system" ) {
+                    if (splitMessage[1] === "move") {
+                        let ind = objects.findIndex(obj => obj.name === splitMessage[2]);
+                        objects[ind].position.set(parseFloat(splitMessage[3]), objects[ind].position.y, parseFloat(splitMessage[4]));
+                    } else if (splitMessage[1] === "rotate") {
+                        let ind = objects.findIndex(obj => obj.name === splitMessage[2]);
+                        // objects[ind].rotation.set(parseFloat(splitMessage[2]), parseFloat(splitMessage[3]), parseFloat(splitMessage[4]));
+                        objects[ind].rotation.set(0, parseFloat(splitMessage[3]), 0);
+                    }
+                } else {
+                    let ind = sensors.findIndex(sensor => sensor.address === splitMessage[0]);
+                    if (splitMessage[1] === "pos") {
+                        let rawMessage = splitMessage.slice(2);
+                        let measure = rawMessage[0].split("!");
+                        points = [];
+                        measure.forEach(m => {
+                            const [x, y] = m.split(":");
+
+                            // const loc = wasm.loc(parseFloat(angle), parseFloat(distance));
+                            // console.log(wasm.loc(parseFloat(angle), parseFloat(distance))[0]);
+                            // let x = Math.sin((angle * Math.PI / 180)) * distance;
+                            // let y = Math.cos((angle * Math.PI / 180)) * distance;
+                            // points.push({x: loc[0], y: loc[1]});
+
+                            // points[ind] = [];
+                            // points[ind].push({x: x, y: y});
+
+                            points.push({x: x, y: y});
+                        })
+                    }
                 }
             });
 
@@ -194,23 +220,23 @@
                 dragging = true;
                 console.log(dragging, "rotating");
             })
+            transformControls.addEventListener("change", (event) => {
+                if (dragging) {
+                    console.log(dragging, "rotating");
+                    let y = transformControls.object.rotation.y;
+                    if ((transformControls.object.rotation.x < 0 || transformControls.object.rotation.z < 0) || (transformControls.object.rotation.x > Math.PI - 0.1 || transformControls.object.rotation.z > Math.PI - 0.1)) {
+                        y = Math.PI/2 + (Math.PI/2 - transformControls.object.rotation.y);
+                        if (y > Math.PI) {
+                            y = - (Math.PI/2 + (Math.PI/2 + transformControls.object.rotation.y));
+                        }
+                        console.log(y);
+                    }
+                    const message = "system;rotate;" + transformControls.object.name + ";" + (Math.trunc(y * 1000 ) / 1000);
+                    ws.send(message);
+                }
+            });
             transformControls.addEventListener("mouseUp", (event) => {
                 dragging = false;
-                console.log(dragging, "rotating");
-                console.log(transformControls.object.rotation.x, transformControls.object.rotation.y, transformControls.object.rotation.z);
-                let y = transformControls.object.rotation.y;
-                if ((transformControls.object.rotation.x < 0 || transformControls.object.rotation.z < 0) || (transformControls.object.rotation.x > Math.PI - 0.1 || transformControls.object.rotation.z > Math.PI - 0.1)) {
-                    y = Math.PI/2 + (Math.PI/2 - transformControls.object.rotation.y);
-                    if (y > Math.PI) {
-                        y = - (Math.PI/2 + (Math.PI/2 + transformControls.object.rotation.y));
-                    }
-                    console.log(y);
-                }
-                // const message = "rotate;" + transformControls.object.name + ";" + (Math.trunc(transformControls.object.rotation.x * 1000 ) / 1000) + ";" + (Math.trunc(transformControls.object.rotation.y * 1000 ) / 1000) + ";" + (Math.trunc(transformControls.object.rotation.z * 1000 ) / 1000)
-                const message = "rotate;" + transformControls.object.name + ";" + (Math.trunc(y * 1000 ) / 1000);
-                ws.send(message);
-            });
-            transformControls.addEventListener("change", (event) => {
             })
             scene.add(transformControls);
 
@@ -267,7 +293,7 @@
                         dragging = false;
                         console.log(event.object);
                         console.log(dragging, "dragging");
-                        const message = "move;" + event.object.name + ";" + (Math.trunc(event.object.position.x * 1000 ) / 1000) + ";" + (Math.trunc(event.object.position.z * 1000 ) / 1000)
+                        const message = "system;move;" + event.object.name + ";" + (Math.trunc(event.object.position.x * 1000 ) / 1000) + ";" + (Math.trunc(event.object.position.z * 1000 ) / 1000)
                         ws.send(message);
                     });
                 },
@@ -384,11 +410,13 @@
 
                 let positions = [];
                 for (let point of points) {
-                    positions.push(
-                        point.x / 1000,
-                        0,
-                        point.y / 1000,
-                    );
+                    // for (let point of sensors) {
+                        positions.push(
+                            point.x / 1000,
+                            0,
+                            point.y / 1000,
+                        );
+                    // }
                 }
                 tgeometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
 

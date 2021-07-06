@@ -41,12 +41,12 @@
 
     const messageSocketStore = messageStore.subscribe(message => {
         let parts, address, hostname, model, resInd;
-        switch(message[0]) {
+        const splitMessage = message.split(";");
+        switch(splitMessage[1]) {
             case "+":
-                parts = message.split(":");
-                address = parts[2];
-                hostname = parts[1];
-                model = parts[3];
+                address = splitMessage[0];
+                hostname = splitMessage[2];
+                model = splitMessage[3];
                 sensors = [...sensors, {
                     address: address,
                     Hostname: hostname,
@@ -55,8 +55,7 @@
                 sensorStore.set(sensors);
                 break;
             case "-":
-                parts = message.split(":");
-                address = parts[2];
+                address = splitMessage[0];
                 resInd = sensors.findIndex(({address}) => sensors.address === address);
                 sensors.splice(resInd, 1);
                 sensors = sensors;

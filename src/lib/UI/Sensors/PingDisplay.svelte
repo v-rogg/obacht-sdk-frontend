@@ -9,10 +9,10 @@
 
     const unsubMessageStore = messageStore.subscribe(message => {
         const splitMessage = message.split(";");
-        const msgAddress = splitMessage[0].slice(1);
+        const msgAddress = splitMessage[0];
 
         if (msgAddress == address) {
-            if (splitMessage[1][0] === "@") {
+            if (splitMessage[1] === "scan") {
                 const time = splitMessage[2];
                 const date = new Date(time);
                 const now = new Date();

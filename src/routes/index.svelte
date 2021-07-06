@@ -31,8 +31,8 @@
 
 <Three/>
 
-{msg}
+<!--{msg}-->
 
-<button on:click={send}>
-    Send WebSocket Message
-</button>
+<!--<button on:click={send}>-->
+<!--    Send WebSocket Message-->
+<!--</button>-->
