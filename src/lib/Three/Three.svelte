@@ -118,10 +118,13 @@
                 camera.right = 5 * (sizes.width / sizes.height);
                 camera.updateProjectionMatrix();
 
+                transformControls.windowHeight = sizes.height;
+
                 renderer.setSize(sizes.width, sizes.height);
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
                 renderer.render(scene, camera);
+
             });
 
 
@@ -186,6 +189,7 @@
             // transformControls.showY = false;
             transformControls.showZ = false;
             transformControls.showE = false;
+            transformControls.windowHeight = sizes.height;
             transformControls.addEventListener("mouseDown", (event) => {
                 dragging = true;
                 console.log(dragging, "rotating");

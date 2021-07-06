@@ -99,6 +99,7 @@ class TransformControls extends THREE.Object3D {
 		defineProperty( 'showY', true );
 		defineProperty( 'showZ', true );
 		defineProperty( 'showE', true );
+		defineProperty( 'windowHeight', 0 );
 
 		// Reusable utility variables
 
@@ -961,8 +962,8 @@ class TransformControlsGizmo extends THREE.Object3D {
 			Y: [
 				// [ new THREE.Line( CircleGeometry( 1, 0.5 ), matLineGreen ), null, [ 0, 0, - Math.PI / 2 ]],
 				// [ new THREE.Mesh( new THREE.OctahedronGeometry( 0.04, 0 ), matGreen ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ]],
-                [ new THREE.Line( CircleGeometry( 0.105, 1 ), matLineBlack ), null, [ 0, Math.PI / 2, 0 ]],
-                [ new THREE.Mesh( new THREE.TorusGeometry( 0.1, 0.005, 4, 24 ), matLineObacht ), null, [ 0, 0, 0 ]],
+                [ new THREE.Line( CircleGeometry( 0.21, 1 ), matLineBlack ), null, [ 0, Math.PI / 2, 0 ]],
+                [ new THREE.Mesh( new THREE.TorusGeometry( 0.2, 0.005, 4, 24 ), matLineObacht ), null, [ 0, 0, 0 ]],
 			],
 			Z: [
 				[ new THREE.Line( CircleGeometry( 1, 0.5 ), matLineBlue ), null, [ 0, Math.PI / 2, 0 ]],
@@ -993,7 +994,7 @@ class TransformControlsGizmo extends THREE.Object3D {
 			],
 			Y: [
 				// [ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ]],
-                [ new THREE.Mesh( new THREE.TorusGeometry( 0.1, 0.05, 2, 24 ), matRed ) ]
+                [ new THREE.Mesh( new THREE.TorusGeometry( 0.2, 0.05, 2, 24 ), matRed ) ]
 			],
 			Z: [
 				[ new THREE.Mesh( new THREE.TorusGeometry( 1, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
@@ -1208,7 +1209,7 @@ class TransformControlsGizmo extends THREE.Object3D {
 
 			if ( this.camera.isOrthographicCamera ) {
 
-				factor = ( this.camera.top - this.camera.bottom ) / this.camera.zoom;
+				factor = (((this.camera.top - this.camera.bottom) / this.camera.zoom) / this.windowHeight) * 1000;
 
 			} else {
 
