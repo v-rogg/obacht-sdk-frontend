@@ -1504,7 +1504,7 @@ class TransformControlsGizmo extends THREE.Object3D {
 					// _tempQuaternion.setFromAxisAngle( _unitY, Math.atan2( _alignVector.x, _alignVector.z ) );
 					// _tempQuaternion.multiplyQuaternions( _tempQuaternion2, _tempQuaternion );
 					// handle.quaternion.copy( _tempQuaternion );
-                    handle.quaternion.setFromRotationMatrix( _lookAtMatrix.lookAt( this.eye, _zeroVector, _unitY ) );
+                    handle.quaternion.setFromRotationMatrix( _lookAtMatrix.lookAt( _unitY, _zeroVector, _unitY ) );
 
 				}
 
