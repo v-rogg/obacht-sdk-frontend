@@ -6,71 +6,49 @@
     import HzDisplay from "$lib/UI/Sensors/HzDisplay.svelte";
     import PingDisplay from "$lib/UI/Sensors/PingDisplay.svelte";
     import { tooltip } from "$lib/actions/tooltip";
-    import { messageStore, sensorStore } from "$lib/../store";
+    import { sensorStore } from "$lib/../store";
     import { fly } from "svelte/transition";
     import { tweened } from "svelte/motion";
     import { linear } from "svelte/easing";
     import { onDestroy } from "svelte";
+    import SensorIcon from "./SensorIcon.svelte";
 
     let open = true;
     let innerWidth = 0;
 
-    let sensors: {address, Hostname, Model}[] = [{
-            address: "localhost",
-            Hostname: "localhost",
-            Model: "97",
-        }]
+    let sensors: { address, Hostname, Model }[] = [{
+        address: "localhost",
+        Hostname: "localhost",
+        Model: "97",
+    }];
 
     let sensorModels = {
         "97": "RPLiDAR S1",
-        "24": "RPLiDAR A1"
+        "24": "RPLiDAR A1",
     };
 
 
     sensorStore.subscribe(val => {
         sensors = val;
-    })
+    });
 
-    const openWidth = 525
-    const closedWidth = 212
+    const openWidth = 480;
+    const closedWidth = 212;
 
     const width = tweened(openWidth, {
         duration: 125,
-        easing: linear
+        easing: linear,
     });
 
-    const messageSocketStore = messageStore.subscribe(message => {
-        let parts, address, hostname, model, resInd;
-        const splitMessage = message.split(";");
-        switch(splitMessage[1]) {
-            case "+":
-                address = splitMessage[0];
-                hostname = splitMessage[2];
-                model = splitMessage[3];
-                sensors = [...sensors, {
-                    address: address,
-                    Hostname: hostname,
-                    Model: model,
-                }]
-                sensorStore.set(sensors);
-                break;
-            case "-":
-                address = splitMessage[0];
-                resInd = sensors.findIndex(({address}) => sensors.address === address);
-                sensors.splice(resInd, 1);
-                sensors = sensors;
-                sensorStore.set(sensors);
-                break;
-        }
-    })
+    const unsubSensorStore = sensorStore.subscribe(val => sensors = val);
 
     function switchOpen() {
         if (open) {
-            $width = closedWidth
+            $width = closedWidth;
         } else {
-            $width = openWidth
+            $width = openWidth;
         }
-        open = !open
+        open = !open;
     }
 
     function getForcedClosed(innerWidth) {
@@ -88,8 +66,8 @@
     $: forceClosed = getForcedClosed(innerWidth);
 
     onDestroy(() => {
-        messageSocketStore();
-    })
+        unsubSensorStore();
+    });
 </script>
 
 <style lang="sass">
@@ -174,11 +152,10 @@
         <div class="close" on:click={switchOpen}><span class:rotate180={open}><i class="fal fa-angle-right"></i></span></div>
     </div>
     {#each sensors as sensor}
-        <div class="sensor"><span title="Sensor IP" use:tooltip>{sensor.address}</span>
+        <div class="sensor"><span title="X: {Math.trunc(sensor.x)} Y: {Math.trunc(sensor.y)} Rotation: {sensor.radian * (180/Math.PI)}°" use:tooltip><SensorIcon color={sensor.color}/></span> <span title="Sensor IP - Hostname: {sensor.hostname}" use:tooltip>{sensor.address}</span>
             {#if open}
                 <span transition:fly={{duration: 150, x: -10, delay: open? 100 : 0}} class="wrap">
-                    <span class="sensor__model" title="Sensor Model: {sensor.Model}" use:tooltip>{sensorModels[sensor.Model]}</span>   <HzDisplay model={sensor.Model} address={sensor.address}/> <PingDisplay address={sensor.address}/>  <span class="battery" title="Start sensor scan" use:tooltip><i class="fas fa-play event-none"></i></span>
-<!--                    <span class="sensor__model" title="Sensor Model: {sensor.model}" use:tooltip>RPLidar S1</span>   <HzDisplay model={parseInt(sensor.model)}/> <PingDisplay/>  <span class="battery" title="Battery estimate" use:tooltip><i class="far fa-battery-half margin-right event-none"></i> 69% <i class="fas fa-play"></i></span>-->
+                    <span class="sensor__model" title="Sensor Model: {sensor.model}" use:tooltip>{sensorModels[sensor.model]}</span>   <HzDisplay model={sensor.model} address={sensor.address}/> <PingDisplay address={sensor.address}/>
                 </span>
             {/if}
         </div>

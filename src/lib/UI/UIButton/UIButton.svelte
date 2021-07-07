@@ -40,6 +40,7 @@
         border-radius: $border-radius
         color: $normal-grey
         position: relative
+        outline: none
 
         &:hover:not(.open):not(:disabled)
             cursor: pointer

@@ -1,31 +1,20 @@
 <script lang="ts">
     import Three from "$lib/Three/Three.svelte";
-    import { messageStore, wsStore } from "../store";
-    import { onMount } from "svelte";
-    import { browser } from "$app/env";
+    import { messageStore } from "../store";
 
     let msg;
-    let ws;
-    wsStore.subscribe(val => ws = val)
 
-    function send() {
-        ws.send("Hello from Svelte!");
-    }
+    messageStore.subscribe(val => {
+        if (val) {
+            let message = val.split(";")
+            if (message[0] == "system") {
+                msg = val
 
-    if (browser) {
-        onMount(() => {
-            messageStore.subscribe(val => {
-                if (val) {
-                    let message = val.split(";")
-                    if (message[0] == "system") {
-                        msg = val
+            }
+        }
 
-                    }
-                }
+    })
 
-            })
-        })
-    }
 </script>
 
 <svelte:head>
@@ -41,7 +30,3 @@
 <Three/>
 
 {msg}
-
-<!--<button on:click={send}>-->
-<!--    Send WebSocket Message-->
-<!--</button>-->

@@ -68,19 +68,34 @@ export const outputSettingsStore = writable({
     }
 });
 
-// TODO: Remove init and replace with server messages
-export const sensorStore = writable([], set => {
-    fetch("http://localhost:3000/init")
-        .then(res => res.json())
-        .then(json => {
+export const sensorStore = derived(messageStore, ($messageStore, set) => {
+    if ($messageStore) {
+        const splitMessage = $messageStore.split(";");
+
+        if (splitMessage[0] === "system" && splitMessage[1] === "sensors") {
             let sensors = [];
-            // console.log(json);
-            Object.keys(json).forEach(key => {
-                sensors.push({
-                    address: key,
-                    ... json[key]
-                })
+
+            const sensorsMesssage = splitMessage[2].split("!");
+
+            sensorsMesssage.forEach(sm => {
+                const sensorValueMessage = sm.split(":");
+
+                if (sensorValueMessage[1]) {
+                    sensors.push({
+                        address: sensorValueMessage[0],
+                        hostname: sensorValueMessage[1],
+                        model: sensorValueMessage[2],
+                        color: sensorValueMessage[3],
+                        x: sensorValueMessage[4],
+                        y: sensorValueMessage[5],
+                        radian: sensorValueMessage[6]
+                    })
+                }
             })
-            set(sensors)
-        })
-});
+
+            console.log(sensors);
+
+            set(sensors);
+        }
+    }
+}, []);

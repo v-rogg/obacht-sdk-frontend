@@ -50,8 +50,7 @@
                         sensorOptimalHz = 10
                         break;
                     case "24":
-                        // sensorOptimalHz = 7.7
-                        sensorOptimalHz = 8
+                        sensorOptimalHz = 7.8
                         break;
                 }
 
