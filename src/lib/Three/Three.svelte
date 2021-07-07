@@ -119,7 +119,7 @@
             const cube = new THREE.Mesh(geometry, material);
             cube.name = "Cube";
             cube.position.set(0, .5, 2);
-            scene.add(cube);
+            // scene.add(cube);
 
             const tmaterial = new THREE.PointsMaterial({
                 color: 0x18A0FB,
@@ -177,37 +177,9 @@
             renderer.setSize(sizes.width, sizes.height);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            objects.push(cube);
-            scaleObjects.push(cube);
-            draggableObjects.push(cube);
-
-            // geometry = new THREE.BoxGeometry(1, 1, 1);
-
-            // for (let i = 0; i < 200; i++) {
-            //
-            //     const object = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0x4E5256 }));
-            //
-            //     object.position.x = Math.random() * 100 - 50;
-            //     object.position.y = Math.random() * 30;
-            //     object.position.z = Math.random() * 80 - 40;
-            //
-            //     object.rotation.x = Math.random() * 2 * Math.PI;
-            //     object.rotation.y = Math.random() * 2 * Math.PI;
-            //     object.rotation.z = Math.random() * 2 * Math.PI;
-            //
-            //     object.scale.x = Math.random() * 2 + 1;
-            //     object.scale.y = Math.random() * 2 + 1;
-            //     object.scale.z = Math.random() * 2 + 1;
-            //
-            //     object.castShadow = true;
-            //     object.receiveShadow = true;
-            //     object.name = `test${i}`
-            //
-            //     scene.add(object);
-            //
-            //     objects.push(object);
-            // }
-
+            // objects.push(cube);
+            // scaleObjects.push(cube);
+            // draggableObjects.push(cube);
 
             let transformControls = new TransformControls(camera, renderer.domElement);
             transformControls.setMode("rotate");
@@ -289,12 +261,15 @@
                         dragging = true;
                         console.log(dragging, "dragging");
                     })
+                    dragControls.addEventListener("drag", (event) => {
+                        if (dragging) {
+                            console.log(dragging, "dragging");
+                            const message = "system;move;" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
+                            ws.send(message);
+                        }
+                    });
                     dragControls.addEventListener("dragend", (event) => {
                         dragging = false;
-                        console.log(event.object);
-                        console.log(dragging, "dragging");
-                        const message = "system;move;" + event.object.name + ";" + (Math.trunc(event.object.position.x * 1000 ) / 1000) + ";" + (Math.trunc(event.object.position.z * 1000 ) / 1000)
-                        ws.send(message);
                     });
                 },
                 // called when loading is in progresses
@@ -312,7 +287,7 @@
             controls.dampingFactor = 0.3;
             controls.rotateSpeed = 0.25;
             controls.screenSpacePanning = false;
-            controls.minZoom = 0.5;
+            controls.minZoom = 0.001;
             controls.maxZoom = 2;
             controls.zoomSpeed = 2;
             // controls.minPolarAngle = 0;
@@ -332,12 +307,15 @@
                 dragging = true;
                 console.log(dragging, "dragging");
             })
+            dragControls.addEventListener("drag", (event) => {
+                if (dragging) {
+                    console.log(dragging, "dragging");
+                    const message = "system;move;" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
+                    ws.send(message);
+                }
+            });
             dragControls.addEventListener("dragend", (event) => {
                 dragging = false;
-                console.log(event.object);
-                console.log(dragging, "dragging");
-                const message = "move;" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
-                ws.send(message);
             });
 
             toolStore.subscribe(val => {

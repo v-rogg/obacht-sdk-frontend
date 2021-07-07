@@ -14,7 +14,16 @@
 
     if (browser) {
         onMount(() => {
-            messageStore.subscribe(val => {msg = val})
+            messageStore.subscribe(val => {
+                if (val) {
+                    let message = val.split(";")
+                    if (message[0] == "system") {
+                        msg = val
+
+                    }
+                }
+
+            })
         })
     }
 </script>
@@ -31,7 +40,7 @@
 
 <Three/>
 
-<!--{msg}-->
+{msg}
 
 <!--<button on:click={send}>-->
 <!--    Send WebSocket Message-->
