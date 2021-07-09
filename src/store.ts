@@ -53,7 +53,7 @@ export const mobileCheckStore = readable(false, set => {
 
 export const showTooltipStore = writable(false);
 
-export const layersStore = writable(["layerSensors", "layerRawData"]);
+export const layersStore = writable(["layerSensors", "layerRawData", "layerGrid"]);
 export const toolStore = writable("hand");
 
 export const recordingStore = writable(false);
@@ -86,9 +86,9 @@ export const sensorStore = derived(messageStore, ($messageStore, set) => {
                         hostname: sensorValueMessage[1],
                         model: sensorValueMessage[2],
                         color: sensorValueMessage[3],
-                        x: sensorValueMessage[4],
-                        y: sensorValueMessage[5],
-                        radian: sensorValueMessage[6]
+                        x: parseFloat(sensorValueMessage[4]),
+                        y: parseFloat(sensorValueMessage[5]),
+                        radian: -parseFloat(sensorValueMessage[6])
                     })
                 }
             })
