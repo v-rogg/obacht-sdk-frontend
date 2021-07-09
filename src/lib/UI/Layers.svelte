@@ -5,7 +5,7 @@
 
     let hotkeysProxy = "";
     let mapGroupOpen = false;
-    let layers: string[] = ["layerSensors", "layerRawData"];
+    let layers: string[] = ["layerSensors", "layerRawData", "layerSensors", "layerGrid"];
 
     const unsubHotkeys = hotkeysStore.subscribe(val => {
         hotkeysProxy = val;
@@ -60,6 +60,14 @@
             on:click={() => switchLayer("layerRawData")}
     >
         <i class="fak fa-sensor-points-regular event-none"></i>
+    </UIButton>
+    <UIButton
+        active={layers.indexOf("layerZones") !== -1}
+        title="Raw Data"
+        hotkey={hotkeysProxy.layerRawData}
+        on:click={() => switchLayer("layerZones")}
+    >
+        <i class="fas fa-draw-polygon event-none"></i>
     </UIButton>
     <UIButton
             active={layers.indexOf("layerPersons") !== -1}

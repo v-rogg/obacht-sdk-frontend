@@ -82,7 +82,7 @@
 
     .addon
         position: absolute
-        font-size: 1rem
+        font-size: .85rem
         top: .25rem
         right: .5rem
 </style>

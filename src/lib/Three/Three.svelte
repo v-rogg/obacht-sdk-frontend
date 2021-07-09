@@ -1,7 +1,7 @@
 <script>
     import * as THREE from "three";
     import { onDestroy, onMount } from "svelte";
-    import { toolStore, layersStore, wsStore, messageStore, sensorStore } from "../../store";
+    import { toolStore, layersStore, wsStore, messageStore, sensorStore } from "$lib/../store";
     import { browser } from "$app/env";
     import { OrbitControls } from "$lib/Three/OrbitControls";
     import { DragControls } from "$lib/Three/DragControls";
@@ -184,7 +184,7 @@
 
             sensors.forEach(sensor => {
                 const s = svgArchive.sensorIcon.clone();
-                s.position.set(sensor.x / 1000, 0, sensor.y / 1000);
+                s.position.set(sensor.x / 1000, 1, sensor.y / 1000);
                 s.rotation.set(0, sensor.radian, 0);
                 s.name = sensor.address;
                 changeColor(s, sensor.color);
@@ -229,8 +229,6 @@
     const unsubToolStore = toolStore.subscribe(val => {
         toolProxy = val
         if (!loading) {
-            orbitControls.enableRotate = val === "hand";
-            orbitControls.enablePan = val === "hand";
 
             if (val === "sensors") {
                 addDragControls(sensorObjects);
@@ -339,6 +337,8 @@
         dragControls.enabled = toolProxy === "sensors";
         dragControls.addEventListener("dragstart", (event) => {
             dragging = true;
+            orbitControls.enablePan = false;
+            orbitControls.enableZoom = false;
             console.log(dragging, "dragging");
             if (rotateControls) rotateControls.attach(event.object);
         })
@@ -349,8 +349,10 @@
                 ws.send(message);
             }
         });
-        dragControls.addEventListener("dragend", (event) => {
+        dragControls.addEventListener("dragend", () => {
             dragging = false;
+            orbitControls.enablePan = true;
+            orbitControls.enableZoom = true;
             console.log(dragging, "dragging");
         });
     }
@@ -388,8 +390,8 @@
             orbitControls.minZoom = 0.1;
             orbitControls.maxZoom = 3;
             orbitControls.zoomSpeed = 2;
-            // orbitControls.minPolarAngle = 0;
-            // orbitControls.maxPolarAngle = 0;
+            orbitControls.minPolarAngle = 0;
+            orbitControls.maxPolarAngle = 0;
             orbitControls.maxPan = new THREE.Vector3(mapSize/3, 100, mapSize/3);
             orbitControls.mouseButtons.LEFT = THREE.MOUSE.PAN;
             orbitControls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
@@ -405,7 +407,9 @@
             rotateControls.showE = false;
             rotateControls.windowHeight = sizes.height;
             rotateControls.addEventListener("mouseDown", () => {
-                rotating = true
+                rotating = true;
+                orbitControls.enablePan = false;
+                orbitControls.enableZoom = false;
                 console.log(rotating, "rotating");
             });
             rotateControls.addEventListener("change", () => {
@@ -422,7 +426,9 @@
                 }
             });
             rotateControls.addEventListener("mouseUp", () => {
-                rotating = false
+                rotating = false;
+                orbitControls.enablePan = true;
+                orbitControls.enableZoom = true;
                 console.log(rotating, "rotating");
             });
             scene.add(rotateControls);
@@ -591,7 +597,7 @@
 
                     const s = svgArchive.sensorIcon.clone();
                     s.name = sensor.address;
-                    s.position.set(sensor.x / 1000, 0, sensor.y / 1000);
+                    s.position.set(sensor.x / 1000, 1, sensor.y / 1000);
                     changeColor(s, sensor.color);
                     scene.add(s);
                     sensorObjects.push(s);

@@ -53,7 +53,7 @@ export const mobileCheckStore = readable(false, set => {
 
 export const showTooltipStore = writable(false);
 
-export const layersStore = writable(["layerSensors", "layerRawData", "layerGrid"]);
+export const layersStore = writable(["layerSensors", "layerRawData", "layerZones", "layerGrid"]);
 export const toolStore = writable("hand");
 
 export const recordingStore = writable(false);

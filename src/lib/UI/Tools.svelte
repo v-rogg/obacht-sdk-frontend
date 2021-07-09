@@ -1,24 +1,28 @@
 <script lang="ts">
-    import { hotkeysStore, toolStore, recordingStore } from "$lib/../store";
+    import { hotkeysStore, toolStore, recordingStore, layersStore } from "$lib/../store";
     import { onDestroy } from 'svelte';
     import UIButton from "$lib/UI/UIButton/UIButton.svelte";
 
     let hotkeys = "";
     let tool: string = "hand";
     let recording: boolean = false;
-
-    let zonesTool: string = "zonesMove";
+    let sensors: boolean = true;
+    let zonesTool: string = "zonesEdit";
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
         hotkeys = val;
     });
     const unsubToolStore = toolStore.subscribe(val => {
-        tool = val
+        tool = val;
     });
     const unsubRecordingStore = recordingStore.subscribe(val => {
-        recording = val
+        recording = val;
         if (recording) toolStore.set("hand");
     });
+    const unsubLayerStore = layersStore.subscribe(val => {
+        sensors = val.includes("layerSensors");
+        if (!val.includes("layerSensors")) toolStore.set("hand");
+    })
 
     function selectTool(val: string) {
         if (tool !== val) {
@@ -30,6 +34,7 @@
         unsubHotkeyStore();
         unsubToolStore();
         unsubRecordingStore();
+        unsubLayerStore();
     })
 </script>
 
@@ -57,60 +62,30 @@
         <i class="fas fa-hand event-none"></i>
     </UIButton>
     <UIButton
-        active={tool === "zonesMove"  ||
-                tool === "zonesPlus"  ||
-                tool === "zonesMinus" ||
+        active={tool === "zonesEdit"  ||
                 tool === "zonesRemove"}
         title="Zones"
         hotkey={hotkeys.toolZones}
         disabled={recording}
         popupPosition="left-center"
         popupType="group"
-        popupOpen={tool === "zonesMove"  ||
-                   tool === "zonesPlus"  ||
-                   tool === "zonesMinus" ||
+        popupOpen={tool === "zonesEdit"  ||
                    tool === "zonesRemove"}
         on:click={() => selectTool(zonesTool)}
     >
         <i class="fas fa-draw-polygon event-none"></i>
         <svelte:fragment slot="popup">
             <UIButton
-                active={tool === "zonesMove"}
+                active={tool === "zonesEdit"}
                 title="Move Zones"
                 on:click={() => {
-                    selectTool("zonesMove");
-                    zonesTool = "zonesMove";
+                    selectTool("zonesEdit");
+                    zonesTool = "zonesEdit";
                 }}
             >
                 <i class="fas fa-draw-polygon event-none"></i>
                 <svelte:fragment slot="addon">
-                    <i class="fas fa-arrows-up-down-left-right event-none"></i>
-                </svelte:fragment>
-            </UIButton>
-            <UIButton
-                active={tool === "zonesPlus"}
-                title="Plus Zones"
-                on:click={() => {
-                    selectTool("zonesPlus");
-                    zonesTool = "zonesPlus";
-                }}
-            >
-                <i class="fas fa-draw-polygon event-none"></i>
-                <svelte:fragment slot="addon">
-                    <i class="fas fa-plus event-none"></i>
-                </svelte:fragment>
-            </UIButton>
-            <UIButton
-                active={tool === "zonesMinus"}
-                title="Minus Zones"
-                on:click={() => {
-                    selectTool("zonesMinus");
-                    zonesTool = "zonesMinus";
-                }}
-            >
-                <i class="fas fa-draw-polygon event-none"></i>
-                <svelte:fragment slot="addon">
-                    <i class="fas fa-minus event-none"></i>
+                    <i class="fas fa-pencil event-none"></i>
                 </svelte:fragment>
             </UIButton>
             <UIButton
@@ -132,7 +107,7 @@
         active={tool === "sensors"}
         title="Sensor Locations"
         hotkey={hotkeys.toolSensorLocations}
-        disabled={recording}
+        disabled={recording || !sensors}
         on:click={() => selectTool("sensors")}
     >
         <i class="fas fa-location-crosshairs event-none"></i>
