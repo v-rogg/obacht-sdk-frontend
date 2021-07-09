@@ -160,7 +160,7 @@ class DragControls extends THREE.EventDispatcher {
 
 		function onPointerDown( event ) {
 
-			event.preventDefault();
+			// event.preventDefault();
 
 			switch ( event.pointerType ) {
 
@@ -177,7 +177,7 @@ class DragControls extends THREE.EventDispatcher {
 
 		function onMouseDown( event ) {
 
-			event.preventDefault();
+			// event.preventDefault();
 
 			_intersections.length = 0;
 

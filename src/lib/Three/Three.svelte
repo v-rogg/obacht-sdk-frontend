@@ -180,6 +180,7 @@
             sensorRawGeometry.clear();
             sensorRawPoints.clear();
             sensorPointClouds = [];
+            if (rotateControls) rotateControls.detach();
 
             sensors.forEach(sensor => {
                 const s = svgArchive.sensorIcon.clone();
@@ -205,6 +206,23 @@
     const unsubLayerStore = layersStore.subscribe(val => {
         gridBig.visible = val.includes("layerGrid")
         gridSmall.visible = val.includes("layerGrid")
+
+        if (val.includes("layerSensors")) {
+            sensorObjects.forEach(obj => obj.visible = true);
+            if (dragControls) addDragControls(sensorObjects);
+        } else {
+            sensorObjects.forEach(obj => obj.visible = false);
+            rotateControls.detach();
+            if (dragControls) addDragControls([]);
+        }
+
+        if (val.includes("layerRawData")) {
+            sensorPointClouds.forEach(cloud => cloud.visible = true);
+        } else {
+            sensorPointClouds.forEach(cloud => cloud.visible = false);
+        }
+
+
         layersProxy = val
     });
     let toolProxy;
@@ -217,7 +235,7 @@
             if (val === "sensors") {
                 addDragControls(sensorObjects);
             } else {
-                rotateControls.detach();
+                if (rotateControls) rotateControls.detach();
             }
             dragControls.enabled = val === "sensors";
         }
@@ -233,7 +251,6 @@
                 sensorObjects[ind].rotation.set(0, -parseFloat(splitMessage[3]), 0);
             }
         } else {
-            let ind = sensors.findIndex(sensor => sensor.address === splitMessage[0]);
             if (splitMessage[1] === "pos") {
                 let rawMessage = splitMessage.slice(2);
                 let measure = rawMessage[0].split("!");
@@ -317,12 +334,13 @@
         try {
             dragControls.removeAllEventListeners();
         } catch (e) {}
+        console.log(objects);
         dragControls = new DragControls([...objects], camera, renderer.domElement);
         dragControls.enabled = toolProxy === "sensors";
         dragControls.addEventListener("dragstart", (event) => {
             dragging = true;
             console.log(dragging, "dragging");
-            rotateControls.attach(event.object)
+            if (rotateControls) rotateControls.attach(event.object);
         })
         dragControls.addEventListener("drag", (event) => {
             if (dragging) {
@@ -332,8 +350,8 @@
             }
         });
         dragControls.addEventListener("dragend", (event) => {
-            console.log(dragging, "dragging");
             dragging = false;
+            console.log(dragging, "dragging");
         });
     }
 
@@ -386,7 +404,10 @@
             rotateControls.showZ = false;
             rotateControls.showE = false;
             rotateControls.windowHeight = sizes.height;
-            rotateControls.addEventListener("mouseDown", () => rotating = true);
+            rotateControls.addEventListener("mouseDown", () => {
+                rotating = true
+                console.log(rotating, "rotating");
+            });
             rotateControls.addEventListener("change", () => {
                 if (rotating) {
                     let y = rotateControls.object.rotation.y;
@@ -400,7 +421,10 @@
                     ws.send(message);
                 }
             });
-            rotateControls.addEventListener("mouseUp", () => dragging = false);
+            rotateControls.addEventListener("mouseUp", () => {
+                rotating = false
+                console.log(rotating, "rotating");
+            });
             scene.add(rotateControls);
 
 
@@ -427,10 +451,10 @@
                 mouse.x = event.clientX / sizes.width * 2 - 1;
                 mouse.y = -(event.clientY / sizes.height) * 2 + 1;
             });
-            canvas.addEventListener("click", () => {
-                if (currentIntersect && !dragging) {
-                    console.log(`clicked on`, currentIntersect);
-
+            canvas.addEventListener("mousedown", () => {
+                if (currentIntersect && !dragging && !rotating) {
+                    console.log(`clicked on filtered`, currentIntersect);
+                    if (rotateControls) rotateControls.detach();
                     // const icon = svgArchive.plus.clone()
                     // icon.position.set(currentIntersect.point.x, 0 , currentIntersect.point.z)
                     // sensorZoneObjects.push(icon);
@@ -441,7 +465,11 @@
 
             // Render
             function render() {
-                renderer.render(scene, camera);
+                try {
+                    renderer.render(scene, camera);
+                } catch (e) {
+                    console.log(e);
+                }
             }
 
 
