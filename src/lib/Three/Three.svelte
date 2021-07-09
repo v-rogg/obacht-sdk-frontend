@@ -18,6 +18,7 @@
     let loading = true;
     let dragging;
     let rotating;
+    let threeScale = 1000;
 
 
     // Globals
@@ -127,12 +128,14 @@
     // let draggableObjects = [];
     let sensorObjects = [];
     let sensorZoneObjects = [];
+    let origin;
 
 
     // Sensors
     let sensorRawGeometry = new Map();
     let sensorRawPoints = new Map();
     let sensorPointClouds = [];
+
 
     // Raycaster
     const raycaster = new THREE.Raycaster();
@@ -184,7 +187,7 @@
 
             sensors.forEach(sensor => {
                 const s = svgArchive.sensorIcon.clone();
-                s.position.set(sensor.x / 1000, 1, sensor.y / 1000);
+                s.position.set(sensor.x / threeScale, 1, sensor.y / threeScale);
                 s.rotation.set(0, sensor.radian, 0);
                 s.name = sensor.address;
                 changeColor(s, sensor.color);
@@ -230,23 +233,55 @@
         toolProxy = val
         if (!loading) {
 
+            dragControls.enabled = false;
+
             if (val === "sensors") {
                 addDragControls(sensorObjects);
+                dragControls.enabled = true;
             } else {
+                addDragControls([]);
                 if (rotateControls) rotateControls.detach();
             }
-            dragControls.enabled = val === "sensors";
+
+            if (val === "origin") {
+                addDragControls([origin]);
+                dragControls.enabled = true;
+            }
         }
     });
     const unsubMessageStore = messageStore.subscribe(message => {
         const splitMessage = message.split(";");
         if (splitMessage[0] === "system" ) {
-            if (splitMessage[1] === "move") {
-                let ind = sensorObjects.findIndex(obj => obj.name === splitMessage[2]);
-                sensorObjects[ind].position.set(parseFloat(splitMessage[3]), sensorObjects[ind].position.y, parseFloat(splitMessage[4]));
-            } else if (splitMessage[1] === "rotate") {
-                let ind = sensorObjects.findIndex(obj => obj.name === splitMessage[2]);
-                sensorObjects[ind].rotation.set(0, -parseFloat(splitMessage[3]), 0);
+            if (splitMessage[1] === "rotate") {
+                switch (splitMessage[2]) {
+                    case "origin":
+                        origin.rotation.set(0, -parseFloat(splitMessage[4]), 0);
+                        break;
+                    case "sensors":
+                        let ind = sensorObjects.findIndex(obj => obj.name === splitMessage[3]);
+                        sensorObjects[ind].rotation.set(0, -parseFloat(splitMessage[4]), 0);
+                        break;
+                    case "zones":
+                        break;
+                    default:
+                        break;
+                }
+            } else if (splitMessage[1] === "move") {
+                switch (splitMessage[2]) {
+                    case "origin":
+                        origin.position.set(parseFloat(splitMessage[4]), origin.position.y, parseFloat(splitMessage[5]));
+                        break;
+                    case "sensors":
+                        let ind = sensorObjects.findIndex(obj => obj.name === splitMessage[3]);
+                        sensorObjects[ind].position.set(parseFloat(splitMessage[4]), sensorObjects[ind].position.y, parseFloat(splitMessage[5]));
+                        break;
+                    case "zones":
+                        break;
+                    default:
+                        break;
+                }
+            } else if (splitMessage[1] === "origin") {
+                origin.position.set(parseFloat(splitMessage[2]) / threeScale, origin.position.y, parseFloat(splitMessage[3]) / threeScale);
             }
         } else {
             if (splitMessage[1] === "pos") {
@@ -340,12 +375,30 @@
             orbitControls.enablePan = false;
             orbitControls.enableZoom = false;
             console.log(dragging, "dragging");
-            if (rotateControls) rotateControls.attach(event.object);
+            if (rotateControls && toolProxy === "sensors") rotateControls.attach(event.object);
         })
         dragControls.addEventListener("drag", (event) => {
             if (dragging) {
                 console.log(dragging, "dragging");
-                const message = "system;move;" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
+
+                let type;
+
+                switch (toolProxy) {
+                    case "sensors":
+                        type = "sensors";
+                        break;
+                    case "zoneEdit" || "zoneRemove":
+                        type = "zone";
+                        break;
+                    case "origin":
+                        type = "origin";
+                        break;
+                    default:
+                        type = "none";
+                        break;
+                }
+
+                const message = "system;move;" + type + ";" + event.object.name + ";" + event.object.position.x + ";" + event.object.position.z
                 ws.send(message);
             }
         });
@@ -400,6 +453,7 @@
             orbitControls.addEventListener("change", () => compassRotation = THREE.MathUtils.radToDeg(orbitControls.getAzimuthalAngle()));
 
 
+            // RotateControls
             rotateControls = new TransformControls(camera, renderer.domElement);
             rotateControls.setMode("rotate");
             rotateControls.showX = false;
@@ -414,14 +468,32 @@
             });
             rotateControls.addEventListener("change", () => {
                 if (rotating) {
-                    let y = rotateControls.object.rotation.y;
+                    let ry = rotateControls.object.rotation.y;
                     if ((rotateControls.object.rotation.x < 0 || rotateControls.object.rotation.z < 0) || (rotateControls.object.rotation.x > Math.PI - 0.1 || rotateControls.object.rotation.z > Math.PI - 0.1)) {
-                        y = Math.PI/2 + (Math.PI/2 - rotateControls.object.rotation.y);
+                        ry = Math.PI/2 + (Math.PI/2 - rotateControls.object.rotation.y);
                         if (y > Math.PI) {
-                            y = - (Math.PI/2 + (Math.PI/2 + rotateControls.object.rotation.y));
+                            ry = - (Math.PI/2 + (Math.PI/2 + rotateControls.object.rotation.y));
                         }
                     }
-                    const message = "system;rotate;" + rotateControls.object.name + ";" + (-Math.trunc(y * 1000 ) / 1000);
+
+                    let type;
+
+                    switch (toolProxy) {
+                        case "sensors":
+                            type = "sensors";
+                            break;
+                        case "zoneEdit" || "zoneRemove":
+                            type = "zone";
+                            break;
+                        case "origin":
+                            type = "origin";
+                            break;
+                        default:
+                            type = "none";
+                            break;
+                    }
+
+                    const message = "system;rotate;" + toolProxy + ";" + rotateControls.object.name + ";" + (-Math.trunc(ry * 1000 ) / 1000);
                     ws.send(message);
                 }
             });
@@ -461,10 +533,14 @@
                 if (currentIntersect && !dragging && !rotating) {
                     console.log(`clicked on filtered`, currentIntersect);
                     if (rotateControls) rotateControls.detach();
-                    // const icon = svgArchive.plus.clone()
-                    // icon.position.set(currentIntersect.point.x, 0 , currentIntersect.point.z)
-                    // sensorZoneObjects.push(icon);
-                    // scene.add(icon);
+
+
+
+                    const icon = svgArchive.circle.clone();
+                    icon.position.set(currentIntersect.point.x, 0 , currentIntersect.point.z);
+                    changeColor(icon, "18A0FB")
+                    sensorZoneObjects.push(icon);
+                    scene.add(icon);
                 }
             });
 
@@ -543,7 +619,7 @@
             // Animate
             function animate() {
                 const scaleFactor = (((camera.top - camera.bottom) / camera.zoom) / sizes.height) * 100;
-                const scaleObjects = [...sensorZoneObjects.flat(2), ...sensorObjects];
+                const scaleObjects = [...sensorZoneObjects.flat(2), ...sensorObjects, origin];
                 scaleObjects.forEach(obj => {
                     obj.scale.set(1, 1, 1).multiplyScalar(scaleFactor)
                 });
@@ -565,7 +641,7 @@
                     let positions = [];
                     if (points) {
                         for (let point of points) {
-                            positions.push(point.x / 1000, 0, point.y / 1000);
+                            positions.push(point.x / threeScale, 0, point.y / threeScale);
                         }
                     }
                     value.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
@@ -584,6 +660,7 @@
             svgArchive.plus = loadSVG("/icons/three/plus.svg");
             svgArchive.minus = loadSVG("/icons/three/minus.svg");
             svgArchive.humanStanding = loadSVG("/icons/three/humanStanding.svg");
+            svgArchive.origin = loadSVG("/icons/three/origin.svg");
 
             manager.onProgress = function ( url, itemsLoaded, itemsTotal ) {console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.')};
 
@@ -594,15 +671,19 @@
                 dragControls.enabled = false;
 
                 sensors.forEach(sensor => {
-
-                    const s = svgArchive.sensorIcon.clone();
-                    s.name = sensor.address;
-                    s.position.set(sensor.x / 1000, 1, sensor.y / 1000);
-                    changeColor(s, sensor.color);
-                    scene.add(s);
-                    sensorObjects.push(s);
-
+                    const sensorObj = svgArchive.sensorIcon.clone();
+                    sensorObj.name = sensor.address;
+                    sensorObj.position.set(sensor.x / threeScale, 1, sensor.y / threeScale);
+                    changeColor(sensorObj, sensor.color);
+                    scene.add(sensorObj);
+                    sensorObjects.push(sensorObj);
                 })
+
+                const originObj = svgArchive.origin.clone();
+                originObj.name = "origin";
+                originObj.position.set(0, .75, 0);
+                scene.add(originObj);
+                origin = originObj;
 
                 render();
                 animate();

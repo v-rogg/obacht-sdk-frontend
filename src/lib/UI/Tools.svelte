@@ -7,6 +7,7 @@
     let tool: string = "hand";
     let recording: boolean = false;
     let sensors: boolean = true;
+    let layersProxy;
     let zonesTool: string = "zonesEdit";
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
@@ -20,8 +21,10 @@
         if (recording) toolStore.set("hand");
     });
     const unsubLayerStore = layersStore.subscribe(val => {
+        layersProxy = val;
         sensors = val.includes("layerSensors");
-        if (!val.includes("layerSensors")) toolStore.set("hand");
+        if (!val.includes("layerSensors") && tool === "sensors") toolStore.set("hand");
+        if (!val.includes("layerZones") && (tool === "zonesEdit" || tool === "zonesRemove")) toolStore.set("hand");
     })
 
     function selectTool(val: string) {
@@ -66,7 +69,7 @@
                 tool === "zonesRemove"}
         title="Zones"
         hotkey={hotkeys.toolZones}
-        disabled={recording}
+        disabled={recording || !layersProxy.includes("layerZones")}
         popupPosition="left-center"
         popupType="group"
         popupOpen={tool === "zonesEdit"  ||
@@ -107,7 +110,7 @@
         active={tool === "sensors"}
         title="Sensor Locations"
         hotkey={hotkeys.toolSensorLocations}
-        disabled={recording || !sensors}
+        disabled={recording || !layersProxy.includes("layerSensors")}
         on:click={() => selectTool("sensors")}
     >
         <i class="fas fa-location-crosshairs event-none"></i>

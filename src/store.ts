@@ -99,3 +99,5 @@ export const sensorStore = derived(messageStore, ($messageStore, set) => {
         }
     }
 }, []);
+
+export const selectedSensor = writable("");

@@ -107,7 +107,7 @@
         </span>
 
         <span class="danger event-none" class:hidden={!danger}>
-            <i class="fas fa-triangle-exclamation"></i>
+            <i class="fas fa-triangle-exclamation fa-fade"></i>
         </span>
 
         {#if $$slots.popup && popupType === "group"}

@@ -74,7 +74,7 @@
             <div class="ws">
                 <Input value={backendAddress} on:change={change => {updateWsStore(change.detail)}}/>
                 <span class:hidden={!wsConnectionStatus} ><i class="fas fa-check"></i></span>
-                <span class:hidden={wsConnectionStatus} class="red"><i class="fas fa-triangle-exclamation"></i></span>
+                <span class:hidden={wsConnectionStatus} class="red"><i class="fas fa-triangle-exclamation fa-fade"></i></span>
             </div>
             <Checkbox label="Tooltips" value={showTooltip} on:change={(change) => {
                     showTooltip = change.detail;
