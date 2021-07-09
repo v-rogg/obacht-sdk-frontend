@@ -22,6 +22,8 @@
         } else {
             layersStore.set([...layers, layer]);
         }
+
+        localStorage.setItem("layers", layers.toString());
     }
 
     onDestroy(() => {

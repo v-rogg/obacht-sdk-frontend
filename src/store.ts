@@ -11,9 +11,9 @@ export const backendAddressStore = writable("", set => {
         //         .split("=")[1];
         // }
 
-        const backendAddressCookieValue = localStorage.getItem("backendAddress");
+        const backendAddressLocalValue = localStorage.getItem("backendAddress");
 
-        backendAddressCookieValue ? set(backendAddressCookieValue) : set("localhost:3000");
+        backendAddressLocalValue ? set(backendAddressLocalValue) : set("localhost:3000");
     }
 });
 
@@ -53,7 +53,14 @@ export const mobileCheckStore = readable(false, set => {
 
 export const showTooltipStore = writable(false);
 
-export const layersStore = writable(["layerSensors", "layerRawData", "layerZones", "layerGrid"]);
+export const layersStore = writable(["layerSensors", "layerRawData", "layerZones", "layerGrid"], (set) => {
+    if (browser) {
+        const layersLocalValue = localStorage.getItem("layers");
+        if (layersLocalValue) {
+            layersLocalValue.split(",") ? set(layersLocalValue.split(",")) : set(["layerSensors", "layerRawData", "layerZones", "layerGrid"]);
+        }
+    }
+});
 export const toolStore = writable("hand");
 
 export const recordingStore = writable(false);
