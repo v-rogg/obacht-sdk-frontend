@@ -98,13 +98,13 @@ export const sensorStore = derived(messageStore, ($messageStore, set) => {
                         radian: -parseFloat(sensorValueMessage[6])
                     })
                 }
-            })
 
-            console.log(sensors);
+                selectedSensorStore.set(null);
+            })
 
             set(sensors);
         }
     }
 }, []);
 
-export const selectedSensor = writable("");
+export const selectedSensorStore = writable(null);

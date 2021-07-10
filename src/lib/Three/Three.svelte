@@ -1,7 +1,7 @@
 <script>
     import * as THREE from "three";
     import { onDestroy, onMount } from "svelte";
-    import { toolStore, layersStore, wsStore, messageStore, sensorStore } from "$lib/../store";
+    import { toolStore, layersStore, wsStore, messageStore, sensorStore, selectedSensorStore } from "$lib/../store";
     import { browser } from "$app/env";
     import { OrbitControls } from "$lib/Three/OrbitControls";
     import { DragControls } from "$lib/Three/DragControls";
@@ -46,6 +46,18 @@
     const yellowPointMaterial = new THREE.PointsMaterial({color: "#FED400", size: 3, opacity: 1});
     const purplePointMaterial = new THREE.PointsMaterial({color: "#CC00CC", size: 3, opacity: 1});
     const flirtPointMaterial = new THREE.PointsMaterial({color: "#960064", size: 3, opacity: 1});
+    const blueLineMaterial = new THREE.LineBasicMaterial({color: "#18A0FB", linewidth: 1});
+    const greenLineMaterial = new THREE.LineBasicMaterial({color: "#93C700", linewidth: 1});
+    const redLineMaterial = new THREE.LineBasicMaterial({color: "#FF0000", linewidth: 1});
+    const yellowLineMaterial = new THREE.LineBasicMaterial({color: "#FED400", linewidth: 1});
+    const purpleLineMaterial = new THREE.LineBasicMaterial({color: "#CC00CC", linewidth: 1});
+    const flirtLineMaterial = new THREE.LineBasicMaterial({color: "#960064", linewidth: 1});
+    const bluePolygonMaterial = new THREE.MeshBasicMaterial({color: "#18A0FB", opacity: .1, transparent: true, side: THREE.DoubleSide});
+    const greenPolygonMaterial = new THREE.MeshBasicMaterial({color: "#93C700", opacity: .1, transparent: true, side: THREE.DoubleSide});
+    const redPolygonMaterial = new THREE.MeshBasicMaterial({color: "#FF0000", opacity: .1, transparent: true, side: THREE.DoubleSide});
+    const yellowPolygonMaterial = new THREE.MeshBasicMaterial({color: "#FED400", opacity: .1, transparent: true, side: THREE.DoubleSide});
+    const purplePolygonMaterial = new THREE.MeshBasicMaterial({color: "#CC00CC", opacity: .1, transparent: true, side: THREE.DoubleSide});
+    const flirtPolygonMaterial = new THREE.MeshBasicMaterial({color: "#960064", opacity: .1, transparent: true, side: THREE.DoubleSide});
 
 
     // Loader
@@ -115,8 +127,6 @@
             // function ( xhr ) { console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' ) },
             // function ( error ) { console.log( 'An error happened', error) }
         );
-
-        // scene.add(group);
         return group;
     }
     let svgArchive = [];
@@ -125,9 +135,7 @@
     // Objects
     let objects = [];
     let scaleObjects = [];
-    // let draggableObjects = [];
     let sensorObjects = [];
-    let sensorZoneObjects = [];
     let origin;
 
 
@@ -135,7 +143,10 @@
     let sensorRawGeometry = new Map();
     let sensorRawPoints = new Map();
     let sensorPointClouds = [];
-
+    let sensorZoneObjects = new Map();
+    let sensorZoneObjectsList = [];
+    let sensorZoneLines = new Map();
+    let sensorZonePolygons = new Map();
 
     // Raycaster
     const raycaster = new THREE.Raycaster();
@@ -233,6 +244,7 @@
         toolProxy = val
         if (!loading) {
 
+            addDragControls([]);
             dragControls.enabled = false;
 
             if (val === "sensors") {
@@ -241,6 +253,11 @@
             } else {
                 addDragControls([]);
                 if (rotateControls) rotateControls.detach();
+            }
+
+            if (val === "zonesEdit") {
+                addDragControls(sensorZoneObjects)
+                dragControls.enabled = true;
             }
 
             if (val === "origin") {
@@ -293,10 +310,11 @@
                     points.push({x: x, y: y});
                 })
                 sensorRawPoints.set(splitMessage[0], points);
-                // sensorRawPoints[ind] = points;
             }
         }
     });
+    let selectedSensor;
+    const unsubSelectedStore = selectedSensorStore.subscribe(val => selectedSensor = val);
 
 
     // HelperFunctions
@@ -319,6 +337,50 @@
                     color: new THREE.Color("#" + color),
                     size: 3,
                     opacity: 1
+                })
+        }
+    }
+    function getLineMaterial(color) {
+        switch (color.toUpperCase()) {
+            case "18A0FB":
+                return blueLineMaterial;
+            case "93C700":
+                return greenLineMaterial;
+            case "FF0000":
+                return redLineMaterial;
+            case "FED400":
+                return yellowLineMaterial;
+            case "CC00CC":
+                return purpleLineMaterial;
+            case "960064":
+                return flirtLineMaterial;
+            default:
+                return new THREE.LineBasicMaterial({
+                    color: new THREE.Color("#" + color),
+                    linewidth: 1,
+                })
+        }
+    }
+    function getPolygonMaterial(color) {
+        switch (color.toUpperCase()) {
+            case "18A0FB":
+                return bluePolygonMaterial;
+            case "93C700":
+                return greenPolygonMaterial;
+            case "FF0000":
+                return redPolygonMaterial;
+            case "FED400":
+                return yellowPolygonMaterial;
+            case "CC00CC":
+                return purplePolygonMaterial;
+            case "960064":
+                return flirtPolygonMaterial;
+            default:
+                return new THREE.MeshBasicMaterial({
+                    color: new THREE.Color("#" + color),
+                    opacity: .1,
+                    transparent: true,
+                    side: THREE.DoubleSide
                 })
         }
     }
@@ -409,6 +471,22 @@
             console.log(dragging, "dragging");
         });
     }
+    function orderByAngle(a, b) {
+        let ind = sensors.findIndex(obj => obj.address === selectedSensor);
+        let sensorX = sensors[ind].x / threeScale;
+        let sensorY = sensors[ind].y / threeScale;
+
+        let angleA = Math.atan2((a.position.z - sensorY), (a.position.x - sensorX));
+        let angleB = Math.atan2((b.position.z - sensorY), (b.position.x - sensorX));
+
+        if (angleA > angleB) {
+            return 1;
+        }
+        if (angleA < angleB) {
+            return -1;
+        }
+        return 0;
+    }
 
 
     if (browser) {
@@ -443,8 +521,8 @@
             orbitControls.minZoom = 0.1;
             orbitControls.maxZoom = 3;
             orbitControls.zoomSpeed = 2;
-            orbitControls.minPolarAngle = 0;
-            orbitControls.maxPolarAngle = 0;
+            // orbitControls.minPolarAngle = 0;
+            // orbitControls.maxPolarAngle = 0;
             orbitControls.maxPan = new THREE.Vector3(mapSize/3, 100, mapSize/3);
             orbitControls.mouseButtons.LEFT = THREE.MOUSE.PAN;
             orbitControls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
@@ -471,7 +549,7 @@
                     let ry = rotateControls.object.rotation.y;
                     if ((rotateControls.object.rotation.x < 0 || rotateControls.object.rotation.z < 0) || (rotateControls.object.rotation.x > Math.PI - 0.1 || rotateControls.object.rotation.z > Math.PI - 0.1)) {
                         ry = Math.PI/2 + (Math.PI/2 - rotateControls.object.rotation.y);
-                        if (y > Math.PI) {
+                        if (ry > Math.PI) {
                             ry = - (Math.PI/2 + (Math.PI/2 + rotateControls.object.rotation.y));
                         }
                     }
@@ -520,7 +598,6 @@
                 rotateControls.windowHeight = sizes.height;
                 renderer.setSize(sizes.width, sizes.height);
                 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-                // renderer.render(scene, camera);
             });
 
 
@@ -531,16 +608,66 @@
             });
             canvas.addEventListener("mousedown", () => {
                 if (currentIntersect && !dragging && !rotating) {
-                    console.log(`clicked on filtered`, currentIntersect);
+                    console.log(`clicked on`, currentIntersect);
                     if (rotateControls) rotateControls.detach();
+                }
+
+                if (currentIntersect && (toolProxy === "zonesEdit" || toolProxy === "zonesRemove") && !dragging && selectedSensor) {
+                    let ind = sensors.findIndex(obj => obj.address === selectedSensor);
+                    const circle = svgArchive.circle.clone();
+                    circle.position.set(currentIntersect.point.x, 0.5 , currentIntersect.point.z);
+                    changeColor(circle, sensors[ind].color)
+                    scene.add(circle);
 
 
+                    let zoneObjectsGrouped = sensorZoneObjects.get(selectedSensor)
+                    if (!zoneObjectsGrouped) {
+                        zoneObjectsGrouped = [];
+                        zoneObjectsGrouped.push(circle);
+                    } else {
+                        zoneObjectsGrouped.push(circle);
+                        zoneObjectsGrouped.sort(orderByAngle);
 
-                    const icon = svgArchive.circle.clone();
-                    icon.position.set(currentIntersect.point.x, 0 , currentIntersect.point.z);
-                    changeColor(icon, "18A0FB")
-                    sensorZoneObjects.push(icon);
-                    scene.add(icon);
+                        let points = [];
+                        let points2D = [];
+                        zoneObjectsGrouped.forEach(zoneObject => {
+                            points.push(new THREE.Vector3(zoneObject.position.x, 0.25, zoneObject.position.z));
+                            points2D.push(new THREE.Vector2(zoneObject.position.x, zoneObject.position.z));
+                        })
+                        const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                        const line = new THREE.LineLoop(geometry, getLineMaterial(sensors[ind].color));
+
+
+                        // TODO: Add polygon
+                        let polygonShape = new THREE.Shape();
+                        polygonShape.setFromPoints(points2D);
+                        const polygonGeometry = new THREE.ShapeGeometry(polygonShape);
+                        const polygon = new THREE.Mesh(polygonGeometry, getPolygonMaterial(sensors[ind].color));
+                        polygon.rotateX(Math.PI/2);
+                        polygon.position.setY(-.25);
+
+                        let sensorZoneLinesTemp = sensorZoneLines.get(selectedSensor);
+                        let sensorZonePolygonsTemp = sensorZonePolygons.get(selectedSensor);
+                        scene.remove(sensorZoneLinesTemp);
+                        scene.remove(sensorZonePolygonsTemp);
+                        sensorZoneLines.set(selectedSensor, line);
+                        sensorZonePolygons.set(selectedSensor, polygon);
+                        scene.add(line);
+                        scene.add(polygon);
+                    }
+
+                    sensorZoneObjects.set(selectedSensor, zoneObjectsGrouped);
+
+
+                    let temp = []
+                    for (const [key, value] of sensorZoneObjects) {
+                        temp.push(...value);
+                    }
+                    sensorZoneObjectsList = temp;
+
+                    console.log(sensorZoneObjects);
+                    console.log(sensorZoneObjectsList);
+
                 }
             });
 
@@ -556,78 +683,19 @@
 
 
             // Animate
-            // <!--function animate() {-->
-            //
-            // <!--    // stats.begin();-->
-            //
-            // <!--    // Cast a ray-->
-            // <!--    raycaster.setFromCamera(mouse, camera);-->
-            //
-            // <!--    let intersects = raycaster.intersectObjects([...objects]);-->
-            // <!--    // let intersects = raycaster.intersectObject(cube);-->
-            //
-            //
-            //     if (intersects.length && !dragging) {
-            //         currentIntersect = intersects[0];
-            //
-            //         currentIntersect.Object.position.x = mouse.x;
-            //             currentIntersect.Object.position.y = mouse.y;
-            //     } else {
-            //         currentIntersect = null;
-            //     }
-            //
-            //     const factor = (((camera.top - camera.bottom) / camera.zoom) / sizes.height) * 1000;
-            //
-            //     scaleObjects.forEach(obj => {
-            //         obj.scale.set(1, 1, 1).multiplyScalar(factor/ 10);
-            //     })
-            //
-            //     if (layersProxy.includes("layerGrid")) {
-            //         // if (camera.zoom <= .5) {
-            //         //     gridBig.visible = true;
-            //         //     gridSmall.visible = false;
-            //         // } else {
-            //         //     gridBig.visible = false;
-            //         //     gridSmall.visible = true;
-            //         // }
-            //         gridBig.visible = true;
-            //         gridSmall.visible = true;
-            //     } else {
-            //         gridBig.visible = false;
-            //         gridSmall.visible = false;
-            //     }
-            //
-            //     let positions = [];
-            //     for (let point of points) {
-            //         // for (let point of sensors) {
-            //             positions.push(
-            //                 point.x / 1000,
-            //                 0,
-            //                 point.y / 1000,
-            //             );
-            //         // }
-            //     }
-            //     tgeometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-            //
-            //     controls.update();
-            //     // controls.update(clock.getDelta());
-            //     render();
-            //
-            //     // stats.end();
-            //     window.requestAnimationFrame(animate);
-            // }
-            // Animate
             function animate() {
                 const scaleFactor = (((camera.top - camera.bottom) / camera.zoom) / sizes.height) * 100;
-                const scaleObjects = [...sensorZoneObjects.flat(2), ...sensorObjects, origin];
+                // const scaleObjects = [...sensorZoneObjects.flat(2), ...sensorObjects, origin];
+                const scaleObjects = [...sensorZoneObjectsList, ...sensorObjects, origin];
+                // const scaleObjects = [...sensorObjects, origin];
                 scaleObjects.forEach(obj => {
                     obj.scale.set(1, 1, 1).multiplyScalar(scaleFactor)
                 });
 
                 raycaster.setFromCamera(mouse, camera);
                 // const intersects = raycaster.intersectObjects([...sensorZoneObjects.flat(2), ...sensorObjects, clickPlane]);
-                const intersects = raycaster.intersectObjects([clickPlane]);
                 // const intersects = raycaster.intersectObjects([...sensorZoneObjects.flat(2), clickPlane]);
+                const intersects = raycaster.intersectObjects([...sensorObjects, clickPlane]);
                 // if (intersects.length && !dragging) {
                 if (intersects.length) {
                     currentIntersect = intersects[0];
@@ -699,6 +767,7 @@
         unsubSensorStore();
         unsubLayerStore();
         unsubToolStore();
+        unsubSelectedStore();
     })
 </script>
 
@@ -723,5 +792,7 @@
     on:click={() => {camera.position.set(0, 0, 0); camera.azimuthAngle = 0}}
 /></div>
 <LoadJumper show={loading}/>
-{toolProxy}
-{layersProxy}
+<!--{toolProxy}-->
+<!--{layersProxy}-->
+<!--{selectedSensor}-->
+<!--{@debug sensorZoneObjects}-->

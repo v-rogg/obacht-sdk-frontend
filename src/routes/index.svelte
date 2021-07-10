@@ -21,12 +21,6 @@
 	<title>Obacht! Configurator</title>
 </svelte:head>
 
-<style>
-    button {
-        position: fixed;
-    }
-</style>
-
 <Three/>
 
 {msg}
