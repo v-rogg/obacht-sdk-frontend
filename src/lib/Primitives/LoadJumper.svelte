@@ -29,12 +29,19 @@
         left: 50%
         top: 50%
         transform: translate(-50%, -50%)
+
+        *
+            position: absolute
+
+    .semihidden
+        opacity: .33
 </style>
 
 {#if show}
     <div class="bg" transition:fade="{{delay: 0, duration: 500}}">
         <div class="wrapper" style="color: {color}">
-            <i class="fal fa-circle-notch fa-spin"></i>
+            <i class="fal fa-spinner-third fa-spin"></i>
+            <i class="fal fa-circle semihidden"></i>
         </div>
     </div>
 {/if}

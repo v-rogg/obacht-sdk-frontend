@@ -108,3 +108,5 @@ export const sensorStore = derived(messageStore, ($messageStore, set) => {
 }, []);
 
 export const selectedSensorStore = writable(null);
+
+export const centerCameraStore = writable(true);

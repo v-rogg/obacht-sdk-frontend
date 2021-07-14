@@ -88,7 +88,7 @@
             >
                 <i class="fas fa-draw-polygon event-none"></i>
                 <svelte:fragment slot="addon">
-                    <i class="fas fa-pencil event-none"></i>
+                    <i class="fas fa-plus event-none"></i>
                 </svelte:fragment>
             </UIButton>
             <UIButton
@@ -101,7 +101,7 @@
             >
                 <i class="fas fa-draw-polygon event-none"></i>
                 <svelte:fragment slot="addon">
-                    <i class="fas fa-eraser event-none"></i>
+                    <i class="fas fa-trash event-none"></i>
                 </svelte:fragment>
             </UIButton>
         </svelte:fragment>

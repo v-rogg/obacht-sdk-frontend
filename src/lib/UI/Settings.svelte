@@ -1,6 +1,6 @@
 <script lang="ts">
     import UIButton from "$lib/UI/UIButton/UIButton.svelte";
-    import { backendAddressStore, hotkeysStore, showTooltipStore, wsConnectionStore, wsStore } from "$lib/../store";
+    import { backendAddressStore, hotkeysStore, showTooltipStore, wsConnectionStore, wsStore, centerCameraStore } from "$lib/../store";
     import { onDestroy } from "svelte";
     import Input from "$lib/Primitives/Input.svelte";
 
@@ -10,6 +10,7 @@
     let ws;
     let wsConnectionStatus;
     let backendAddress;
+    let cameraCentered;
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => hotkeys = val);
     const unsubShowTooltipStore = showTooltipStore.subscribe(val => showTooltip = val);
@@ -18,6 +19,7 @@
     });
     const unsubWsConnectionStore = wsConnectionStore.subscribe(val => wsConnectionStatus = val);
     const unsubBackendAddressStore = backendAddressStore.subscribe(val => backendAddress = val);
+    const unsubCenterCameraStore = centerCameraStore.subscribe(val => cameraCentered = val);
 
     function updateWsStore(url) {
         if (url) {
@@ -37,6 +39,7 @@
         unsubWsStore();
         unsubWsConnectionStore();
         unsubBackendAddressStore();
+        unsubCenterCameraStore();
     });
 </script>
 
@@ -90,6 +93,12 @@
                 </UIButton>
                 <UIButton on:click={sendResetOrigin} title="Reset Origin">
                     <i class="fas fa-crosshairs event-none"></i>
+                    <svelte:fragment slot="addon">
+                        <i class="fas fa-arrow-rotate-left event-none"></i>
+                    </svelte:fragment>
+                </UIButton>
+                <UIButton on:click={() => {centerCameraStore.set(true)}} active={!cameraCentered} title="Reset Camera">
+                    <i class="fas fa-video-camera event-none"></i>
                     <svelte:fragment slot="addon">
                         <i class="fas fa-arrow-rotate-left event-none"></i>
                     </svelte:fragment>
