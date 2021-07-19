@@ -66,12 +66,12 @@ export const toolStore = writable("hand");
 export const recordingStore = writable(false);
 
 export const outputSettingsStore = writable({
-    JSON: {
-        enabled: false,
-        location: "C:\\output\\export.json"
-    },
     MQTT: {
         enabled: true,
+    },
+    LOG: {
+        enabled: false,
+        location: "D:\\output.log"
     }
 });
 
