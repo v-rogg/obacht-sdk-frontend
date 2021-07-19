@@ -1,8 +1,16 @@
 <script lang="ts">
     import UIButton from "$lib/UI/UIButton/UIButton.svelte";
-    import { backendAddressStore, hotkeysStore, showTooltipStore, wsConnectionStore, wsStore, centerCameraStore } from "$lib/../store";
+    import {
+        backendAddressStore,
+        hotkeysStore,
+        showTooltipStore,
+        wsConnectionStore,
+        wsStore,
+        centerCameraStore, messageStore, dbscanSettingsStore,
+    } from "$lib/../store";
     import { onDestroy } from "svelte";
     import Input from "$lib/Primitives/Input.svelte";
+    import Range from "$lib/Primitives/Range.svelte";
 
     let hotkeys = "";
     let settingsPopupOpen = false;
@@ -12,6 +20,8 @@
     let backendAddress;
     let cameraCentered;
 
+    let dbscanSettings;
+
     const unsubHotkeyStore = hotkeysStore.subscribe(val => hotkeys = val);
     const unsubShowTooltipStore = showTooltipStore.subscribe(val => showTooltip = val);
     const unsubWsStore = wsStore.subscribe(val => {
@@ -20,6 +30,26 @@
     const unsubWsConnectionStore = wsConnectionStore.subscribe(val => wsConnectionStatus = val);
     const unsubBackendAddressStore = backendAddressStore.subscribe(val => backendAddress = val);
     const unsubCenterCameraStore = centerCameraStore.subscribe(val => cameraCentered = val);
+    const unsubMessageStore = messageStore.subscribe(message => {
+        const splitMessage = message.split(";");
+        if (splitMessage[0] === "system" ) {
+            if (splitMessage[1] === "dbscan") {
+                switch (splitMessage[2]) {
+                    case "eps":
+                        dbscanSettings.eps = parseFloat(splitMessage[3]);
+                        dbscanSettingsStore.set(dbscanSettings);
+                        break;
+                    case "minSamples":
+                        dbscanSettings.minSamples = parseInt(splitMessage[3]);
+                        dbscanSettingsStore.set(dbscanSettings);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    });
+    const unsubDBSCANSettingsStore = dbscanSettingsStore.subscribe(val => dbscanSettings = val);
 
     function updateWsStore(url) {
         if (url) {
@@ -30,7 +60,7 @@
     }
 
     function sendResetOrigin() {
-        ws.send("system;move;origin;origin;0;0")
+        ws.send("system;move;origin;origin;0;0");
     }
 
     onDestroy(() => {
@@ -40,6 +70,8 @@
         unsubWsConnectionStore();
         unsubBackendAddressStore();
         unsubCenterCameraStore();
+        unsubMessageStore();
+        unsubDBSCANSettingsStore();
     });
 </script>
 
@@ -60,6 +92,11 @@
     .buttons
         display: flex
         gap: .5rem .75rem
+
+    .ranges
+        display: flex
+        flex-direction: column
+        gap: .5rem .75rem
 </style>
 
 <section class="settings">
@@ -75,7 +112,6 @@
     >
         <i class="fas fa-gear event-none"></i>
         <svelte:fragment slot="popup">
-<!--            Here will be the global settings like configs<br/>-->
             <div class="ws">
                 <Input value={backendAddress} on:change={change => {updateWsStore(change.detail)}} title="Backend address">
                     <svelte:fragment slot="addon">
@@ -83,6 +119,14 @@
                         <span class:hidden={wsConnectionStatus} class="red"><i class="fas fa-triangle-exclamation fa-fade"></i></span>
                     </svelte:fragment>
                 </Input>
+            </div>
+            <div class="ranges">
+                <Range min="10" max="1000" step="10" value={dbscanSettings.eps} on:change={change => {ws.send("system;dbscan;eps;" + change.detail)}} unit="mm">
+                    EPS
+                </Range>
+                <Range min="1" max="100" step="1" value={dbscanSettings.minSamples} on:change={change => {ws.send("system;dbscan;minSamples;" + change.detail)}} unit="n">
+                    MIN_SAMPLES
+                </Range>
             </div>
             <div class="buttons">
                 <UIButton title="Enable tooltips" active={showTooltip} on:click={() => {
