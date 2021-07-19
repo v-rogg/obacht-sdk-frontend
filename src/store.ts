@@ -65,6 +65,8 @@ export const toolStore = writable("hand");
 
 export const recordingStore = writable(false);
 
+export const pausedStore = writable(false);
+
 export const outputSettingsStore = writable({
     MQTT: {
         enabled: true,

@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { hotkeysStore, toolStore, recordingStore, layersStore } from "$lib/../store";
+    import { hotkeysStore, toolStore, recordingStore, layersStore, pausedStore } from "$lib/../store";
     import { onDestroy } from 'svelte';
     import UIButton from "$lib/UI/UIButton/UIButton.svelte";
 
     let hotkeys = "";
     let tool: string = "hand";
     let recording: boolean = false;
+    let paused: boolean = false;
     let sensors: boolean = true;
     let layersProxy;
     let zonesTool: string = "zonesEdit";
@@ -20,12 +21,16 @@
         recording = val;
         if (recording) toolStore.set("hand");
     });
+    const unsubPausedStore = pausedStore.subscribe(val => {
+        paused = val
+        if (tool === "sensors") toolStore.set("hand");
+    });
     const unsubLayerStore = layersStore.subscribe(val => {
         layersProxy = val;
         sensors = val.includes("layerSensors");
         if (!val.includes("layerSensors") && tool === "sensors") toolStore.set("hand");
         if (!val.includes("layerZones") && (tool === "zonesEdit" || tool === "zonesRemove")) toolStore.set("hand");
-    })
+    });
 
     function selectTool(val: string) {
         if (tool !== val) {
@@ -38,6 +43,7 @@
         unsubToolStore();
         unsubRecordingStore();
         unsubLayerStore();
+        unsubPausedStore();
     })
 </script>
 
@@ -110,7 +116,7 @@
         active={tool === "sensors"}
         title="Sensor Locations"
         hotkey={hotkeys.toolSensorLocations}
-        disabled={recording || !layersProxy.includes("layerSensors")}
+        disabled={recording || !layersProxy.includes("layerSensors") || paused}
         on:click={() => selectTool("sensors")}
     >
         <i class="fas fa-location-crosshairs event-none"></i>

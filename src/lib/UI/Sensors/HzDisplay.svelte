@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { messageStore } from "$lib/../store";
+    import { messageStore, pausedStore } from "$lib/../store";
     import { tooltip } from "$lib/actions/tooltip";
     import { onDestroy } from "svelte";
 
@@ -9,6 +9,7 @@
     let hz: string = "--.-";
     let oldDate: number;
     let msDiffs: number[30] = [];
+    let paused = false;
 
     let cls = "";
 
@@ -17,49 +18,59 @@
         return Math.round(value * multiplier) / multiplier;
     }
 
+    const unsubPausedStore = pausedStore.subscribe(val => {
+        paused = val
+        if (paused) {
+            oldDate = undefined;
+            msDiffs = [];
+        }
+    });
+
     const unsubMessageStore = messageStore.subscribe(message => {
-        const splitMessage = message.split(";");
-        const msgAddress = splitMessage[0];
+        if (!paused) {
+            const splitMessage = message.split(";");
+            const msgAddress = splitMessage[0];
 
-        if (msgAddress == address) {
-            if (splitMessage[1] === "scan") {
-                const time = splitMessage[2];
-                const date = Date.parse(time);
-                const msDiff = (date - oldDate);
-                oldDate = date;
-                if (msDiffs.length == 30) {
-                    msDiffs.shift();
-                }
-                if (!isNaN(msDiff)) {
-                    msDiffs.push(msDiff);
-                }
-                let total = 0;
-                msDiffs.forEach(v => {
-                    total += v;
-                })
-                const avg = total / msDiffs.length;
-                const hzNumber = round(1000 / avg, 1);
-                hz = hzNumber.toFixed(1);
+            if (msgAddress == address) {
+                if (splitMessage[1] === "scan") {
+                    const time = splitMessage[2];
+                    const date = Date.parse(time);
+                    const msDiff = (date - oldDate);
+                    oldDate = date;
+                    if (msDiffs.length == 30) {
+                        msDiffs.shift();
+                    }
+                    if (!isNaN(msDiff)) {
+                        msDiffs.push(msDiff);
+                    }
+                    let total = 0;
+                    msDiffs.forEach(v => {
+                        total += v;
+                    })
+                    const avg = total / msDiffs.length;
+                    const hzNumber = round(1000 / avg, 1);
+                    hz = hzNumber.toFixed(1);
 
 
-                // TODO: Config file
-                let sensorOptimalHz = 0;
+                    // TODO: Config file
+                    let sensorOptimalHz = 0;
 
-                switch (model) {
-                    case "97":
-                        sensorOptimalHz = 10
-                        break;
-                    case "24":
-                        sensorOptimalHz = 7.8
-                        break;
-                }
+                    switch (model) {
+                        case "97":
+                            sensorOptimalHz = 10
+                            break;
+                        case "24":
+                            sensorOptimalHz = 7.8
+                            break;
+                    }
 
-                if (hzNumber >= sensorOptimalHz-.2 && hzNumber <= sensorOptimalHz+.2) {
-                    cls = ""
-                } else if ((hzNumber > sensorOptimalHz-.5 && hzNumber < sensorOptimalHz) || (hzNumber < sensorOptimalHz+.5 && hzNumber > sensorOptimalHz) ) {
-                    cls = "yellow"
-                } else {
-                    cls = "red"
+                    if (hzNumber >= sensorOptimalHz-.2 && hzNumber <= sensorOptimalHz+.2) {
+                        cls = ""
+                    } else if ((hzNumber > sensorOptimalHz-.5 && hzNumber < sensorOptimalHz) || (hzNumber < sensorOptimalHz+.5 && hzNumber > sensorOptimalHz) ) {
+                        cls = "yellow"
+                    } else {
+                        cls = "red"
+                    }
                 }
             }
         }
@@ -67,6 +78,7 @@
 
     onDestroy(() => {
         unsubMessageStore();
+        unsubPausedStore();
     })
 </script>
 

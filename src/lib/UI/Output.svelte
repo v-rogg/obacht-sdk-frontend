@@ -5,7 +5,7 @@
         recordingStore,
         outputSettingsStore,
         backendAddressStore,
-        messageStore, wsStore,
+        messageStore, wsStore, pausedStore,
     } from "$lib/../store";
     import { onDestroy } from "svelte";
     import Checkbox from "$lib/Primitives/Checkbox.svelte";
@@ -39,6 +39,8 @@
     const unsubOutputSettingsStore = outputSettingsStore.subscribe(val => {
         outputSettings = val;
     });
+
+    const unsubPausedStore = pausedStore.subscribe(val => paused = val)
 
     const unsubMessageStore = messageStore.subscribe(message => {
         const splitMessage = message.split(";");
@@ -99,7 +101,7 @@
         active={true}
         title="Snapshot"
         hotkey={hotkeys.toolPause}
-        on:click={() => {paused = !paused}}
+        on:click={() => {pausedStore.set(!paused)}}
     >
         <span class:hidden={!paused} class="event-none">
             <i class="fas fa-play event-none"></i>

@@ -1,33 +1,39 @@
 <script lang="ts">
-    import { messageStore } from "$lib/../store";
+    import { messageStore, pausedStore } from "$lib/../store";
     import { tooltip } from "$lib/actions/tooltip";
     import { onDestroy } from "svelte";
 
     export let address: string;
 
     let ms: string = "---";
+    let paused = false;
+
+    const unsubPausedStore = pausedStore.subscribe(val => paused = val);
 
     const unsubMessageStore = messageStore.subscribe(message => {
-        const splitMessage = message.split(";");
-        const msgAddress = splitMessage[0];
+        if (!paused) {
+            const splitMessage = message.split(";");
+            const msgAddress = splitMessage[0];
 
-        if (msgAddress == address) {
-            if (splitMessage[1] === "scan") {
-                const time = splitMessage[2];
-                const date = new Date(time);
-                const now = new Date();
-                // const offset = -700;
-                ms = (now - date).toFixed(0);
-                // ms = round(msDiff, 1).toFixed(1);
-                // console.log(now, date);
+            if (msgAddress == address) {
+                if (splitMessage[1] === "scan") {
+                    const time = splitMessage[2];
+                    const date = new Date(time);
+                    const now = new Date();
+                    // const offset = -700;
+                    ms = (now - date).toFixed(0);
+                    // ms = round(msDiff, 1).toFixed(1);
+                    // console.log(now, date);
 
-                // console.log("now", now.getMilliseconds(), "sensor", date.getMilliseconds());
+                    // console.log("now", now.getMilliseconds(), "sensor", date.getMilliseconds());
+                }
             }
         }
     });
 
     onDestroy(() => {
         unsubMessageStore();
+        unsubPausedStore();
     })
 </script>
 

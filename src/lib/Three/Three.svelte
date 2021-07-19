@@ -8,7 +8,7 @@
     import { TransformControls } from "$lib/THREE/TransformControls";
     import LoadJumper from "$lib/Primitives/LoadJumper.svelte";
     import { SVGLoader } from "$lib/THREE/SVGLoader.js";
-    import { centerCameraStore } from "../../store";
+    import { centerCameraStore, pausedStore } from "../../store";
 
 
     // Helper
@@ -219,6 +219,8 @@
             dragControls.enabled = toolProxy === "sensors";
         }
     });
+    let paused;
+    const unsubPausedStore = pausedStore.subscribe(val => paused = val);
     let layersProxy;
     const unsubLayerStore = layersStore.subscribe(val => {
         gridBig.visible = val.includes("layerGrid")
@@ -239,6 +241,11 @@
             sensorPointClouds.forEach(cloud => cloud.visible = false);
         }
 
+        if (val.includes("layerPersons")) {
+            personObjects.forEach(person => person.visible = true);
+        } else {
+            personObjects.forEach(person => person.visible = false);
+        }
 
         layersProxy = val
     });
@@ -270,117 +277,121 @@
         }
     });
     const unsubMessageStore = messageStore.subscribe(message => {
-        const splitMessage = message.split(";");
-        if (splitMessage[0] === "system" ) {
-            if (splitMessage[1] === "rotate") {
-                switch (splitMessage[2]) {
-                    case "origin":
-                        origin.rotation.set(0, -parseFloat(splitMessage[4]), 0);
-                        break;
-                    case "sensors":
-                        let ind = sensorObjects.findIndex(obj => obj.name === splitMessage[3]);
-                        sensorObjects[ind].rotation.set(0, -parseFloat(splitMessage[4]), 0);
-                        break;
-                    case "zones":
-                        break;
-                    default:
-                        break;
+        if (!paused) {
+            const splitMessage = message.split(";");
+            if (splitMessage[0] === "system" ) {
+                if (splitMessage[1] === "rotate") {
+                    switch (splitMessage[2]) {
+                        case "origin":
+                            origin.rotation.set(0, -parseFloat(splitMessage[4]), 0);
+                            break;
+                        case "sensors":
+                            let ind = sensorObjects.findIndex(obj => obj.name === splitMessage[3]);
+                            sensorObjects[ind].rotation.set(0, -parseFloat(splitMessage[4]), 0);
+                            break;
+                        case "zones":
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (splitMessage[1] === "move") {
+                    switch (splitMessage[2]) {
+                        case "origin":
+                            origin.position.set(parseFloat(splitMessage[4]), origin.position.y, parseFloat(splitMessage[5]));
+                            break;
+                        case "sensors":
+                            let ind = sensorObjects.findIndex(obj => obj.name === splitMessage[3]);
+                            sensorObjects[ind].position.set(parseFloat(splitMessage[4]), sensorObjects[ind].position.y, parseFloat(splitMessage[5]));
+                            break;
+                        case "zones":
+                            break;
+                        default:
+                            break;
+                    }
+                } else if (splitMessage[1] === "origin") {
+                    origin.position.set(parseFloat(splitMessage[2]) / threeScale, origin.position.y, parseFloat(splitMessage[3]) / threeScale);
+                } else if (splitMessage[1] === "zones") {
+                    // Remove old zoneObjects
+                    // for (const [key, value] of sensorZoneObjects) {
+                    //     scene.remove(value);
+                    // }
+
+                    // const sensorMessageParts = splitMessage[2].split("!")
+                    // for (let i = 0; i < sensorMessageParts.length - 1; i++) {
+                    //     const sensorMessage = sensorMessageParts[i].split(",")
+                    //     const sensorAddress = sensorMessage[0]
+                    //
+                    //     console.log(sensorAddress);
+                    //
+                    //     const ind = sensors.findIndex(obj => obj.address === sensorAddress);
+                    //
+                    //     sensorZoneObjects.set(sensorAddress, []);
+                    //
+                    //     if (sensorMessage[1]) {
+                    //         const sensorPositions = sensorMessage[1].split("?")
+                    //         for (let j = 0; j < sensorPositions.length - 1; j++) {
+                    //
+                    //
+                    //
+                    //             const xy = sensorPositions[j].split(":")
+                    //
+                    //             console.log(xy);
+                    //
+                    //             // Create zone object
+                    //             const circle = svgArchive.circle.clone();
+                    //             circle.position.set(xy[0], 0.5, xy[1]);
+                    //             changeColor(circle, sensors[ind].color)
+                    //             scene.add(circle);
+                    //
+                    //             // Add zone object to sensorZoneObjects Map
+                    //             let zoneObjectsGrouped = sensorZoneObjects.get(sensorAddress)
+                    //             if (!zoneObjectsGrouped) {
+                    //                 zoneObjectsGrouped = [];
+                    //                 zoneObjectsGrouped.push(circle);
+                    //             } else {
+                    //                 zoneObjectsGrouped.push(circle);
+                    //             }
+                    //             sensorZoneObjects.set(sensorAddress, zoneObjectsGrouped);
+                    //         }
+                    //     }
+                    //    const zoneObjectsGrouped = sensorZoneObjects.get(sensorAddress)
+                    //    zoneObjectsGrouped.sort(orderByAngle);
+                    //    sensorZoneObjects.set(sensorAddress, zoneObjectsGrouped);
+                    // }
+                    //
+                    // generateSensorZoneObjectList();
+                    // addDragControls(sensorZoneObjectsList);
+                    // dragControls.enabled = true;
+                    //
+                    // drawZones();
+                } else if (splitMessage[1] === "persons") {
+                    if (layersProxy.includes("layerPersons")) {
+                        personObjects.forEach(obj => scene.remove(obj));
+
+                        const personPositionsMessages = splitMessage[2].split("!")
+                        personPositionsMessages.forEach(personPositionsMessage => {
+                            const personPosition = personPositionsMessage.split(":")
+
+                            const person = svgArchive.humanStanding.clone();
+                            person.position.set(parseFloat(personPosition[0]), 0.2, parseFloat(personPosition[1]));
+                            person.scale.set(1, 1, 1).multiplyScalar(.75);
+                            changeColor(person, "000000")
+                            scene.add(person);
+                            personObjects.push(person);
+                        })
+                    }
+                 }
+            } else {
+                if (splitMessage[1] === "pos") {
+                    let rawMessage = splitMessage.slice(2);
+                    let measure = rawMessage[0].split("!");
+                    let points = [];
+                    measure.forEach(m => {
+                        const [x, y] = m.split(":");
+                        points.push({x: x, y: y});
+                    })
+                    sensorRawPoints.set(splitMessage[0], points);
                 }
-            } else if (splitMessage[1] === "move") {
-                switch (splitMessage[2]) {
-                    case "origin":
-                        origin.position.set(parseFloat(splitMessage[4]), origin.position.y, parseFloat(splitMessage[5]));
-                        break;
-                    case "sensors":
-                        let ind = sensorObjects.findIndex(obj => obj.name === splitMessage[3]);
-                        sensorObjects[ind].position.set(parseFloat(splitMessage[4]), sensorObjects[ind].position.y, parseFloat(splitMessage[5]));
-                        break;
-                    case "zones":
-                        break;
-                    default:
-                        break;
-                }
-            } else if (splitMessage[1] === "origin") {
-                origin.position.set(parseFloat(splitMessage[2]) / threeScale, origin.position.y, parseFloat(splitMessage[3]) / threeScale);
-            } else if (splitMessage[1] === "zones") {
-                // Remove old zoneObjects
-                // for (const [key, value] of sensorZoneObjects) {
-                //     scene.remove(value);
-                // }
-
-                // const sensorMessageParts = splitMessage[2].split("!")
-                // for (let i = 0; i < sensorMessageParts.length - 1; i++) {
-                //     const sensorMessage = sensorMessageParts[i].split(",")
-                //     const sensorAddress = sensorMessage[0]
-                //
-                //     console.log(sensorAddress);
-                //
-                //     const ind = sensors.findIndex(obj => obj.address === sensorAddress);
-                //
-                //     sensorZoneObjects.set(sensorAddress, []);
-                //
-                //     if (sensorMessage[1]) {
-                //         const sensorPositions = sensorMessage[1].split("?")
-                //         for (let j = 0; j < sensorPositions.length - 1; j++) {
-                //
-                //
-                //
-                //             const xy = sensorPositions[j].split(":")
-                //
-                //             console.log(xy);
-                //
-                //             // Create zone object
-                //             const circle = svgArchive.circle.clone();
-                //             circle.position.set(xy[0], 0.5, xy[1]);
-                //             changeColor(circle, sensors[ind].color)
-                //             scene.add(circle);
-                //
-                //             // Add zone object to sensorZoneObjects Map
-                //             let zoneObjectsGrouped = sensorZoneObjects.get(sensorAddress)
-                //             if (!zoneObjectsGrouped) {
-                //                 zoneObjectsGrouped = [];
-                //                 zoneObjectsGrouped.push(circle);
-                //             } else {
-                //                 zoneObjectsGrouped.push(circle);
-                //             }
-                //             sensorZoneObjects.set(sensorAddress, zoneObjectsGrouped);
-                //         }
-                //     }
-                //    const zoneObjectsGrouped = sensorZoneObjects.get(sensorAddress)
-                //    zoneObjectsGrouped.sort(orderByAngle);
-                //    sensorZoneObjects.set(sensorAddress, zoneObjectsGrouped);
-                // }
-                //
-                // generateSensorZoneObjectList();
-                // addDragControls(sensorZoneObjectsList);
-                // dragControls.enabled = true;
-                //
-                // drawZones();
-            } else if (splitMessage[1] === "persons") {
-                personObjects.forEach(obj => scene.remove(obj));
-
-                const personPositionsMessages = splitMessage[2].split("!")
-                personPositionsMessages.forEach(personPositionsMessage => {
-                    const personPosition = personPositionsMessage.split(":")
-
-                    const person = svgArchive.humanStanding.clone();
-                    person.position.set(parseFloat(personPosition[0]), 0.2, parseFloat(personPosition[1]));
-                    person.scale.set(1, 1, 1).multiplyScalar(.75);
-                    changeColor(person, "000000")
-                    scene.add(person);
-                    personObjects.push(person);
-                })
-             }
-        } else {
-            if (splitMessage[1] === "pos") {
-                let rawMessage = splitMessage.slice(2);
-                let measure = rawMessage[0].split("!");
-                let points = [];
-                measure.forEach(m => {
-                    const [x, y] = m.split(":");
-                    points.push({x: x, y: y});
-                })
-                sensorRawPoints.set(splitMessage[0], points);
             }
         }
     });
@@ -390,7 +401,7 @@
         if (val && orbitControls) {
             orbitControls.reset();
         }
-    })
+    });
 
 
     // HelperFunctions
@@ -876,6 +887,7 @@
         unsubToolStore();
         unsubSelectedStore();
         unsubCenterCamera();
+        unsubPausedStore();
     })
 </script>
 
@@ -900,7 +912,3 @@
     on:click={() => {camera.position.set(0, 0, 0); camera.azimuthAngle = 0}}
 /></div>
 <LoadJumper show={loading}/>
-<!--{toolProxy}-->
-<!--{layersProxy}-->
-<!--{selectedSensor}-->
-<!--{@debug sensorZoneObjects}-->
