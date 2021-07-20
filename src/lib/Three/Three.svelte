@@ -254,25 +254,23 @@
         toolProxy = val
         if (!loading) {
 
-            addDragControls([]);
-            dragControls.enabled = false;
+            dragControls.dispose();
 
             if (val === "sensors") {
                 addDragControls(sensorObjects);
-                dragControls.enabled = true;
             } else {
-                addDragControls([]);
                 if (rotateControls) rotateControls.detach();
             }
 
-            if (val === "zonesEdit") {
+            if (val === "zonesMove") {
                 addDragControls(sensorZoneObjectsList)
-                dragControls.enabled = true;
             }
+
+            // if (val === "zonesAdd" || val === "zonesRemove") {
+            // }
 
             if (val === "origin") {
                 addDragControls([origin]);
-                dragControls.enabled = true;
             }
         }
     });
@@ -514,11 +512,12 @@
     }
     function addDragControls(objects) {
         try {
+            dragControls.dispose();
             dragControls.removeAllEventListeners();
         } catch (e) {}
         console.log(objects);
         dragControls = new DragControls([...objects], camera, renderer.domElement);
-        dragControls.enabled = toolProxy === "sensors";
+        dragControls.enabled = true;
         dragControls.addEventListener("dragstart", (event) => {
             dragging = true;
             orbitControls.enablePan = false;
@@ -531,12 +530,26 @@
                 console.log(dragging, "dragging");
 
                 let type;
+                // console.log("bla", toolProxy);
+                //
+                // if (toolProxy === "zonesRemove") {
+                //     console.log("foo");
+                //     drawZones();
+                // }
 
                 switch (toolProxy) {
                     case "sensors":
                         type = "sensors";
                         break;
-                    case "zonesEdit" || "zonesRemove":
+                    case "zonesAdd":
+                        type = "zones";
+                        drawZones();
+                        break;
+                    case "zonesMove":
+                        type = "zones";
+                        drawZones();
+                        break;
+                    case "zonesRemove":
                         type = "zones";
                         drawZones();
                         break;
@@ -580,6 +593,7 @@
         return 0;
     }
     function drawZones() {
+        console.log("drawZones");
         for (const [key, value] of sensorZoneObjects) {
             let ind = sensors.findIndex(obj => obj.address === key);
 
@@ -752,13 +766,26 @@
                 mouse.x = event.clientX / sizes.width * 2 - 1;
                 mouse.y = -(event.clientY / sizes.height) * 2 + 1;
             });
+            // canvas.addEventListener("touchmove", (event) => {
+            //     const evt = (typeof event.originalEvent === "undefined") ? event : event.originalEvent;
+            //     const touch = evt.touches[0] || evt.changedTouches[0]
+            //     mouse.x = touch.pageX / sizes.width * 2 - 1;
+            //     mouse.y = -(touch.pageY / sizes.width) * 2 - 1;
+            //
+            //     console.log("canvas", mouse);
+            // });
+            // window.addEventListener("touchmove", (event) => {
+            //
+            //
+            //     console.log("window", mouse);
+            // });
             canvas.addEventListener("mousedown", () => {
                 if (currentIntersect && !dragging && !rotating) {
                     console.log(`clicked on`, currentIntersect);
                     if (rotateControls) rotateControls.detach();
                 }
 
-                if (currentIntersect && (toolProxy === "zonesEdit" || toolProxy === "zonesRemove") && !dragging && selectedSensor) {
+                if (currentIntersect && (toolProxy === "zonesAdd") && !dragging && selectedSensor) {
                     let ind = sensors.findIndex(obj => obj.address === selectedSensor);
 
                     // Create zone object
@@ -780,13 +807,56 @@
                     sensorZoneObjects.set(selectedSensor, zoneObjectsGrouped);
 
                     generateSensorZoneObjectList();
-                    addDragControls(sensorZoneObjectsList);
-                    dragControls.enabled = true;
+                    // addDragControls(sensorZoneObjectsList);
+                    // dragControls.enabled = true;
 
                     drawZones();
                     sendZonesMessage();
                 }
             });
+            canvas.addEventListener("touchstart", (event) => {
+                const evt = (typeof event.originalEvent === "undefined") ? event : event.originalEvent;
+                const touch = evt.touches[0] || evt.changedTouches[0]
+                mouse.x = touch.pageX / sizes.width * 2 - 1;
+                mouse.y = -(touch.pageY / sizes.height) * 2 + 1;
+            });
+            canvas.addEventListener("touchend", () => {
+                if (currentIntersect && !dragging && !rotating) {
+                    console.log(`clicked on`, currentIntersect);
+                    if (rotateControls) rotateControls.detach();
+                }
+
+                if (currentIntersect && (toolProxy === "zonesAdd") && !dragging && selectedSensor) {
+                    let ind = sensors.findIndex(obj => obj.address === selectedSensor);
+
+                    // Create zone object
+                    const circle = svgArchive.circle.clone();
+                    circle.position.set(currentIntersect.point.x, 0.5 , currentIntersect.point.z);
+                    circle.scale.set(4, 4, 4);
+                    changeColor(circle, sensors[ind].color)
+                    scene.add(circle);
+
+
+                    // Add zone object to sensorZoneObjects Map
+                    let zoneObjectsGrouped = sensorZoneObjects.get(selectedSensor)
+                    if (!zoneObjectsGrouped) {
+                        zoneObjectsGrouped = [];
+                        zoneObjectsGrouped.push(circle);
+                    } else {
+                        zoneObjectsGrouped.push(circle);
+                        zoneObjectsGrouped.sort(orderByAngle);
+                    }
+                    sensorZoneObjects.set(selectedSensor, zoneObjectsGrouped);
+
+                    generateSensorZoneObjectList();
+                    // addDragControls(sensorZoneObjectsList);
+                    // dragControls.enabled = true;
+
+                    drawZones();
+                    sendZonesMessage();
+                }
+            })
+
 
 
             // Render

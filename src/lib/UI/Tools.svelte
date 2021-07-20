@@ -9,7 +9,7 @@
     let paused: boolean = false;
     let sensors: boolean = true;
     let layersProxy;
-    let zonesTool: string = "zonesEdit";
+    let zonesTool: string = "zonesAdd";
 
     const unsubHotkeyStore = hotkeysStore.subscribe(val => {
         hotkeys = val;
@@ -29,7 +29,7 @@
         layersProxy = val;
         sensors = val.includes("layerSensors");
         if (!val.includes("layerSensors") && tool === "sensors") toolStore.set("hand");
-        if (!val.includes("layerZones") && (tool === "zonesEdit" || tool === "zonesRemove")) toolStore.set("hand");
+        if (!val.includes("layerZones") && (tool === "zonesAdd" || tool === "zonesMove" || tool === "zonesRemove")) toolStore.set("hand");
     });
 
     function selectTool(val: string) {
@@ -71,30 +71,45 @@
         <i class="fas fa-hand event-none"></i>
     </UIButton>
     <UIButton
-        active={tool === "zonesEdit"  ||
+        active={tool === "zonesAdd" ||
+                tool === "zonesMove" ||
                 tool === "zonesRemove"}
         title="Zones"
         hotkey={hotkeys.toolZones}
         disabled={recording || !layersProxy.includes("layerZones")}
         popupPosition="left-center"
         popupType="group"
-        popupOpen={tool === "zonesEdit"  ||
+        popupOpen={tool === "zonesAdd" ||
+                   tool === "zonesMove" ||
                    tool === "zonesRemove"}
         on:click={() => selectTool(zonesTool)}
     >
         <i class="fas fa-draw-polygon event-none"></i>
         <svelte:fragment slot="popup">
             <UIButton
-                active={tool === "zonesEdit"}
+                active={tool === "zonesAdd"}
                 title="Move Zones"
                 on:click={() => {
-                    selectTool("zonesEdit");
-                    zonesTool = "zonesEdit";
+                    selectTool("zonesAdd");
+                    zonesTool = "zonesAdd";
                 }}
             >
                 <i class="fas fa-draw-polygon event-none"></i>
                 <svelte:fragment slot="addon">
                     <i class="fas fa-plus event-none"></i>
+                </svelte:fragment>
+            </UIButton>
+            <UIButton
+                active={tool === "zonesMove"}
+                title="Move Zones"
+                on:click={() => {
+                    selectTool("zonesMove");
+                    zonesTool = "zonesMove";
+                }}
+            >
+                <i class="fas fa-draw-polygon event-none"></i>
+                <svelte:fragment slot="addon">
+                    <i class="fas fa-up-down-left-right event-none"></i>
                 </svelte:fragment>
             </UIButton>
             <UIButton
