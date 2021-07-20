@@ -6,7 +6,7 @@
     import HzDisplay from "$lib/UI/Sensors/HzDisplay.svelte";
     import PingDisplay from "$lib/UI/Sensors/PingDisplay.svelte";
     import { tooltip } from "$lib/actions/tooltip";
-    import { sensorStore, selectedSensorStore } from "$lib/../store";
+    import { sensorStore, selectedSensorStore, toolStore } from "$lib/../store";
     import { fly } from "svelte/transition";
     import { tweened } from "svelte/motion";
     import { linear } from "svelte/easing";
@@ -27,10 +27,8 @@
         "24": "RPLiDAR A1",
     };
 
-
-    sensorStore.subscribe(val => {
-        sensors = val;
-    });
+    let selectedSensor;
+    let toolStoreProxy;
 
     const openWidth = 480;
     const closedWidth = 212;
@@ -41,6 +39,8 @@
     });
 
     const unsubSensorStore = sensorStore.subscribe(val => sensors = val);
+    const unsubSelectedSensorStore = selectedSensorStore.subscribe(val => selectedSensor = val);
+    const unsubToolStore = toolStore.subscribe(val => toolStoreProxy = val);
 
     function switchOpen() {
         if (open) {
@@ -67,6 +67,8 @@
 
     onDestroy(() => {
         unsubSensorStore();
+        unsubSelectedSensorStore();
+        unsubToolStore();
     });
 </script>
 
@@ -98,6 +100,7 @@
         align-items: center
         cursor: default
         position: relative
+        //background: $white
 
     .header
         display: flex
@@ -138,6 +141,10 @@
         .sensor__model
             margin: 0 2rem 0 2rem
             width: max-content
+
+    .notSelected
+        //color: $medium-grey
+        //background: $light-grey
 </style>
 
 <svelte:window bind:innerWidth={innerWidth}/>
@@ -148,8 +155,13 @@
         <div class="close" on:click={switchOpen}><span class:rotate180={open}><i class="fal fa-angle-right"></i></span></div>
     </div>
     {#each sensors as sensor}
-        <div class="sensor" on:click={() => {selectedSensorStore.set(sensor.address)}}>
-            <span title="X: {Math.trunc(sensor.x)} Y: {Math.trunc(sensor.y)} Rotation: {sensor.radian * (180/Math.PI)}°" use:tooltip><SensorIcon color={sensor.color}/></span> <span title="Sensor IP - Hostname: {sensor.hostname}" use:tooltip>{sensor.address}</span>
+        <div class="sensor"
+             class:notSelected={selectedSensor !== sensor.address && (toolStoreProxy.includes("zonesAdd") || toolStoreProxy.includes("zonesMove") || toolStoreProxy.includes("zonesRemove"))}
+             on:click={() => {(toolStoreProxy.includes("zonesAdd") || toolStoreProxy.includes("zonesMove") || toolStoreProxy.includes("zonesRemove")) ? selectedSensorStore.set(sensor.address) : null}}>
+            <span title="X: {Math.trunc(sensor.x)} Y: {Math.trunc(sensor.y)} Rotation: {sensor.radian * (180/Math.PI)}°" use:tooltip>
+                <SensorIcon color={selectedSensor !== sensor.address && (toolStoreProxy.includes("zonesAdd") || toolStoreProxy.includes("zonesMove") || toolStoreProxy.includes("zonesRemove")) ? "DFE1E4" : sensor.color}/>
+            </span>
+            <span title="Sensor IP - Hostname: {sensor.hostname}" use:tooltip>{sensor.address}</span>
             {#if open}
                 <span transition:fly={{duration: 150, x: -10, delay: open? 100 : 0}} class="wrap">
                     <span class="sensor__model" title="Sensor Model: {sensor.model}" use:tooltip>{sensorModels[sensor.model]}</span>   <HzDisplay model={sensor.model} address={sensor.address}/> <PingDisplay address={sensor.address}/>
@@ -158,3 +170,5 @@
         </div>
     {/each}
 </div>
+
+{selectedSensor}

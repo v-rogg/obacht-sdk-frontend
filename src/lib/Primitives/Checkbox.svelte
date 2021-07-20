@@ -18,21 +18,25 @@
         justify-content: flex-start
         align-items: center
         width: max-content
-
+        color: $black
+        
     input
         position: relative
         cursor: pointer
         height: 0
         width: 0
         display: none
+        color: $black
 
     .checkbox
         position: relative
-        height: 1.125rem
-        width: 1.125rem
+        //height: 1.125rem
+        //width: 1.125rem
+        height: 2.5rem
+        width: 2.5rem
         background: $white
         border-radius: $border-radius
-        margin-right: .5rem
+        margin-right: 1rem
         display: flex
         justify-content: center
         align-items: center
@@ -40,6 +44,7 @@
 
     .checkmark
         position: relative
+        color: $black
 
     .hidden
         display: none

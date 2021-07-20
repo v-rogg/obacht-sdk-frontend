@@ -94,6 +94,23 @@
 
     .red
         color: $red
+
+    .margin-right
+        margin-right: 1rem
+
+    .recoding-text
+        display: flex
+        align-items: center
+        position: absolute
+        width: max-content
+        left: calc(100% + 1.5rem)
+        top: 50%
+        transform: translateY(-50%)
+
+        @media (max-width: 900px)
+            left: 50%
+            top: -100%
+            transform: translateX(-50%)
 </style>
 
 <section class="outputs">
@@ -120,7 +137,7 @@
         }}
     >
         <span class:hidden={!recording} class="red event-none">
-            <i class="fas fa-circle event-none"></i>
+            <i class="fas fa-circle fa-fade event-none"></i>
         </span>
         <span class:hidden={recording} class="red event-none">
             <i class="far fa-circle event-none"></i>
@@ -151,4 +168,17 @@
                 }}/>
         </svelte:fragment>
     </UIButton>
+    {#if recording}
+    <div class="recoding-text">
+        <i class="fas fa-circle fa-fade event-none red margin-right"></i>
+        <div>
+            {#if outputSettings.MQTT.enabled}
+                <div>Streaming over MQTT</div>
+            {/if}
+            {#if outputSettings.LOG.enabled}
+                <div>Storing log file</div>
+            {/if}
+        </div>
+    </div>
+    {/if}
 </section>
