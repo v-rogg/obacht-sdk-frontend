@@ -61,7 +61,7 @@
             hotkey={hotkeysProxy.layerRawData}
             on:click={() => switchLayer("layerRawData")}
     >
-        <i class="fak fa-sensor-points-regular event-none"></i>
+        <i class="fas fa-chart-network event-none"></i>
     </UIButton>
     <UIButton
         active={layers.indexOf("layerZones") !== -1}

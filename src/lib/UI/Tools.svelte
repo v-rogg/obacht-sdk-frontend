@@ -1,5 +1,12 @@
 <script lang="ts">
-    import { hotkeysStore, toolStore, recordingStore, layersStore, pausedStore } from "$lib/../store";
+    import {
+        hotkeysStore,
+        toolStore,
+        recordingStore,
+        layersStore,
+        pausedStore,
+        selectedSensorStore,
+    } from "$lib/../store";
     import { onDestroy } from 'svelte';
     import UIButton from "$lib/UI/UIButton/UIButton.svelte";
 
@@ -19,7 +26,10 @@
     });
     const unsubRecordingStore = recordingStore.subscribe(val => {
         recording = val;
-        if (recording) toolStore.set("hand");
+        if (recording) {
+            toolStore.set("hand");
+            selectedSensorStore.set(null);
+        }
     });
     const unsubPausedStore = pausedStore.subscribe(val => {
         paused = val
@@ -29,7 +39,10 @@
         layersProxy = val;
         sensors = val.includes("layerSensors");
         if (!val.includes("layerSensors") && tool === "sensors") toolStore.set("hand");
-        if (!val.includes("layerZones") && (tool === "zonesAdd" || tool === "zonesMove" || tool === "zonesRemove")) toolStore.set("hand");
+        if (!val.includes("layerZones") && (tool === "zonesAdd" || tool === "zonesMove" || tool === "zonesRemove")) {
+            toolStore.set("hand");
+            selectedSensorStore.set(null);
+        }
     });
 
     function selectTool(val: string) {

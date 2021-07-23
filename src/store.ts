@@ -28,11 +28,11 @@ export const wsStore = derived(backendAddressStore, ($backendAddressStore, set) 
 export const wsConnectionStore = derived(wsStore, ($wsStore, set) => {
     if ($wsStore) {
         $wsStore.addEventListener("open", () => {
-            console.log("open")
+            // console.log("open")
             set(true)
         });
         $wsStore.addEventListener("close", () => {
-            console.log("close")
+            // console.log("close")
             set(false)
         });
         $wsStore.addEventListener("error", () => set(false));

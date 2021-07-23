@@ -38,6 +38,6 @@
 </style>
 
 <section class='brand'>
-    <h1><img src='/static/obacht-logo.svg' alt='obacht! logo' class='logo'></h1>
+    <h1><img src='/obacht-logo.svg' alt='obacht! logo' class='logo'></h1>
     <h5><span class='bold'>Configurator</span>r1.0</h5>
 </section>

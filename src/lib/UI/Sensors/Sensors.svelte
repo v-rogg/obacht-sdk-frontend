@@ -6,7 +6,7 @@
     import HzDisplay from "$lib/UI/Sensors/HzDisplay.svelte";
     import PingDisplay from "$lib/UI/Sensors/PingDisplay.svelte";
     import { tooltip } from "$lib/actions/tooltip";
-    import { sensorStore, selectedSensorStore, toolStore } from "$lib/../store";
+    import { sensorStore, selectedSensorStore, toolStore, wsStore } from "$lib/../store";
     import { fly } from "svelte/transition";
     import { tweened } from "svelte/motion";
     import { linear } from "svelte/easing";
@@ -29,6 +29,7 @@
 
     let selectedSensor;
     let toolStoreProxy;
+    let ws;
 
     const openWidth = 480;
     const closedWidth = 212;
@@ -41,6 +42,7 @@
     const unsubSensorStore = sensorStore.subscribe(val => sensors = val);
     const unsubSelectedSensorStore = selectedSensorStore.subscribe(val => selectedSensor = val);
     const unsubToolStore = toolStore.subscribe(val => toolStoreProxy = val);
+    const unsubWsStore = wsStore.subscribe(val => ws = val);
 
     function switchOpen() {
         if (open) {
@@ -69,6 +71,7 @@
         unsubSensorStore();
         unsubSelectedSensorStore();
         unsubToolStore();
+        unsubWsStore();
     });
 </script>
 
@@ -142,9 +145,13 @@
             margin: 0 2rem 0 2rem
             width: max-content
 
-    .notSelected
+    //.notSelected
         //color: $medium-grey
         //background: $light-grey
+
+    .pointer
+        &:hover
+            cursor: pointer
 </style>
 
 <svelte:window bind:innerWidth={innerWidth}/>
@@ -156,10 +163,14 @@
     </div>
     {#each sensors as sensor}
         <div class="sensor"
-             class:notSelected={selectedSensor !== sensor.address && (toolStoreProxy.includes("zonesAdd") || toolStoreProxy.includes("zonesMove") || toolStoreProxy.includes("zonesRemove"))}
-             on:click={() => {(toolStoreProxy.includes("zonesAdd") || toolStoreProxy.includes("zonesMove") || toolStoreProxy.includes("zonesRemove")) ? selectedSensorStore.set(sensor.address) : null}}>
+             class:notSelected={selectedSensor !== sensor.address && toolStoreProxy.includes("zonesAdd")}
+             class:pointer={toolStoreProxy.includes("zonesAdd") || toolStoreProxy.includes("zonesRemove")}
+             on:click={() => {
+                 toolStoreProxy.includes("zonesAdd") ? selectedSensorStore.set(sensor.address) : null;
+                 toolStoreProxy.includes("zonesRemove") ? ws.send(`system;remove;zones;${sensor.address}`) : null ;
+             }}>
             <span title="X: {Math.trunc(sensor.x)} Y: {Math.trunc(sensor.y)} Rotation: {sensor.radian * (180/Math.PI)}°" use:tooltip>
-                <SensorIcon color={selectedSensor !== sensor.address && (toolStoreProxy.includes("zonesAdd") || toolStoreProxy.includes("zonesMove") || toolStoreProxy.includes("zonesRemove")) ? "DFE1E4" : sensor.color}/>
+                <SensorIcon color={selectedSensor !== sensor.address && toolStoreProxy.includes("zonesAdd") ? "F4F5F7" : sensor.color}/>
             </span>
             <span title="Sensor IP - Hostname: {sensor.hostname}" use:tooltip>{sensor.address}</span>
             {#if open}
@@ -170,5 +181,3 @@
         </div>
     {/each}
 </div>
-
-{selectedSensor}
