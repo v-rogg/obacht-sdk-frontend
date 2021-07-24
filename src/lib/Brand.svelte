@@ -1,3 +1,7 @@
+<script lang="ts">
+    export let subtitle = false;
+</script>
+
 <style lang='sass'>
     @import '../style/theme.sass'
 
@@ -39,5 +43,7 @@
 
 <section class='brand'>
     <h1><img src='/obacht-logo.svg' alt='obacht! logo' class='logo'></h1>
-    <h5><span class='bold'>Configurator</span>r1.0</h5>
+    {#if subtitle}
+        <h5><span class='bold'>Configurator</span>r1.0</h5>
+    {/if}
 </section>
